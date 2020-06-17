@@ -32,7 +32,7 @@ function DemoCollectionScreen() {
         <Text style={styles.heading}>Collection</Text>
         <Text style={styles.text}> Body text, testing that it looks ok</Text>
         <Button
-          title="Go to Details"
+          title="Go to DemoScreen"
           onPress={() => navigation.navigate('DemoScreen')}
         />
       </View>
@@ -49,7 +49,7 @@ function DemoScreen() {
         <Text style={styles.heading}>Demo</Text>
         <Text style={styles.text}> Body text, testing that it looks ok</Text>
         <Button
-          title="Go to Details"
+          title="Go to DemoCollectionScreen"
           onPress={() => navigation.navigate('DemoCollectionScreen')}
         />
       </View>
