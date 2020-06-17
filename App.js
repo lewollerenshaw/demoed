@@ -1,7 +1,9 @@
 import * as React from 'react';
 import { NavigationContainer, useNavigation } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import { StyleSheet, Text, View, Button } from 'react-native';
+import {
+  StyleSheet, Text, View, Button,
+} from 'react-native';
 import Constants from 'expo-constants';
 import { Colors } from './styles/colors';
 
