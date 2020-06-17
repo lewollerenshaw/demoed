@@ -1,0 +1,17 @@
+{
+  "name": "demoed",
+  "displayName": "demoed",
+  "expo": {
+    "name": "demoed",
+    "slug": "demoed",
+    "version": "1.0.0",
+    "platforms": [
+      "ios",
+      "android",
+      "web"
+    ],
+    "assetBundlePatterns": [
+      "**/*"
+    ]
+  }
+}
