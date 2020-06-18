@@ -37,6 +37,12 @@ const listStyles = StyleSheet.create({
   },
 
   /* Demo Screen Specific */
+  itemRecordingDuration: {
+    opacity: 0.6,
+  },
+  itemTags: {
+    opacity: 0.6,
+  },
 });
 
 export default listStyles;

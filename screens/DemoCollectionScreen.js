@@ -9,10 +9,11 @@ import listStyles from '../styles/list';
 import appStyles from '../styles/app';
 import searchStyles from '../styles/search';
 import { Colors } from '../styles/colors';
+import { SampleData } from '../data';
 
 function DemoCollectionScreen() {
   const navigation = useNavigation();
-  const [value, onChangeText] = React.useState('');
+  const [searchText, onChangeSearchText] = React.useState('');
 
   return (
     <View style={appStyles.container}>
@@ -21,35 +22,31 @@ function DemoCollectionScreen() {
 
         <TextInput
           style={searchStyles.input}
-          onChangeText={(text) => onChangeText(text)}
-          value={value}
-          placeholder="Search"
+          onChangeText={(text) => onChangeSearchText(text)}
+          value={searchText}
+          placeholder="Search..."
           placeholderTextColor={Colors.$n6}
         />
 
         <FlatList
-          data={[
-            { key: 'Easy Living' },
-            { key: 'Moon' },
-            { key: 'Sunset In The Valley' },
-            { key: 'We Are On The Run' },
-          ]}
+          data={SampleData}
           renderItem={({ item }) => (
             <TouchableOpacity
               style={listStyles.item}
-              onPress={() => navigation.navigate('DemoScreen')}
+              onPress={() => navigation.navigate('DemoScreen', { item })}
             >
               <View style={listStyles.itemPrimaryColumn}>
-                <Text style={listStyles.itemHeader}>{item.key}</Text>
-                <Text style={listStyles.itemDate}>12/07/2020</Text>
+                <Text style={listStyles.itemHeader}>{item.title}</Text>
+                <Text style={listStyles.itemDate}>{item.dateCreated}</Text>
               </View>
 
               <View style={listStyles.itemSecondaryColumn}>
                 <FontAwesomeIcon style={listStyles.itemIcon} icon={faCompactDisc} />
-                <Text style={listStyles.itemRecordingCount}>5</Text>
+                <Text style={listStyles.itemRecordingCount}>{item.recordings.length}</Text>
               </View>
             </TouchableOpacity>
           )}
+          keyExtractor={(_item, index) => index.toString()}
         />
       </View>
     </View>
