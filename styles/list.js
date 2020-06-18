@@ -6,13 +6,14 @@ const listStyles = StyleSheet.create({
   item: {
     paddingVertical: 10,
     borderBottomWidth: 1,
-    borderBottomColor: 'black',
+    borderBottomColor: Colors.$n2,
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
   itemHeader: {
     fontSize: 18,
     color: Colors.$info,
+    marginBottom: 5,
   },
   itemPrimaryColumn: {
     alignSelf: 'stretch',
@@ -29,8 +30,10 @@ const listStyles = StyleSheet.create({
   },
   itemIcon: {
     marginRight: 10,
+    opacity: 0.6,
   },
   itemRecordingCount: {
+    opacity: 0.6,
   },
 
   /* Demo Screen Specific */

@@ -1,20 +1,31 @@
 import * as React from 'react';
 import { useNavigation } from '@react-navigation/native';
 import {
-  Text, View, FlatList, TouchableOpacity,
+  Text, View, FlatList, TouchableOpacity, TextInput,
 } from 'react-native';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faCompactDisc } from '@fortawesome/free-solid-svg-icons';
 import listStyles from '../styles/list';
 import appStyles from '../styles/app';
+import searchStyles from '../styles/search';
+import { Colors } from '../styles/colors';
 
 function DemoCollectionScreen() {
   const navigation = useNavigation();
+  const [value, onChangeText] = React.useState('');
 
   return (
     <View style={appStyles.container}>
       <View style={appStyles.body}>
-        <Text style={appStyles.heading}>Collection</Text>
+        <Text style={appStyles.heading}>Your collection</Text>
+
+        <TextInput
+          style={searchStyles.input}
+          onChangeText={(text) => onChangeText(text)}
+          value={value}
+          placeholder="Search"
+          placeholderTextColor={Colors.$n6}
+        />
 
         <FlatList
           data={[
