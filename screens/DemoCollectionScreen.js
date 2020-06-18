@@ -3,6 +3,8 @@ import { useNavigation } from '@react-navigation/native';
 import {
   Text, View, Button, FlatList,
 } from 'react-native';
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
+import { faCoffee } from '@fortawesome/free-solid-svg-icons';
 import listStyles from '../styles/list';
 import appStyles from '../styles/app';
 
@@ -20,18 +22,19 @@ function DemoCollectionScreen() {
         />
         <FlatList
           data={[
-            { key: 'Devin' },
-            { key: 'Dan' },
-            { key: 'Dominic' },
-            { key: 'Jackson' },
-            { key: 'James' },
-            { key: 'Joel' },
-            { key: 'John' },
-            { key: 'Jillian' },
-            { key: 'Jimmy' },
-            { key: 'Julie' },
+            { key: 'Easy Living' },
+            { key: 'Moon' },
+            { key: 'Sunset In The Valley' },
+            { key: 'We Are On The Run' },
           ]}
-          renderItem={({ item }) => <Text style={listStyles.item}>{item.key}</Text>}
+          renderItem={({ item }) => (
+            <View style={listStyles.item}>
+              <Text>{item.key}</Text>
+              <Text>12/07/2020</Text>
+              <FontAwesomeIcon icon={faCoffee} />
+              <Text>5</Text>
+            </View>
+          )}
         />
       </View>
     </View>
