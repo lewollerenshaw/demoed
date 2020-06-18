@@ -12,10 +12,11 @@ const appStyles = StyleSheet.create({
   },
   body: {
     paddingTop: statusBarHeight,
-    color: Colors.$info,
+    color: Colors.$primary,
   },
   heading: {
     fontSize: 32,
+    color: Colors.$info,
   },
 });
 

@@ -1,10 +1,10 @@
 import * as React from 'react';
 import { useNavigation } from '@react-navigation/native';
 import {
-  Text, View, Button, FlatList,
+  Text, View, FlatList, TouchableOpacity,
 } from 'react-native';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faCoffee } from '@fortawesome/free-solid-svg-icons';
+import { faCompactDisc } from '@fortawesome/free-solid-svg-icons';
 import listStyles from '../styles/list';
 import appStyles from '../styles/app';
 
@@ -15,11 +15,7 @@ function DemoCollectionScreen() {
     <View style={appStyles.container}>
       <View style={appStyles.body}>
         <Text style={appStyles.heading}>Collection</Text>
-        <Text style={appStyles.text}> Body text, testing that it looks ok</Text>
-        <Button
-          title="Go to DemoScreen"
-          onPress={() => navigation.navigate('DemoScreen')}
-        />
+
         <FlatList
           data={[
             { key: 'Easy Living' },
@@ -28,12 +24,20 @@ function DemoCollectionScreen() {
             { key: 'We Are On The Run' },
           ]}
           renderItem={({ item }) => (
-            <View style={listStyles.item}>
-              <Text>{item.key}</Text>
-              <Text>12/07/2020</Text>
-              <FontAwesomeIcon icon={faCoffee} />
-              <Text>5</Text>
-            </View>
+            <TouchableOpacity
+              style={listStyles.item}
+              onPress={() => navigation.navigate('DemoScreen')}
+            >
+              <View style={listStyles.itemPrimaryColumn}>
+                <Text style={listStyles.itemHeader}>{item.key}</Text>
+                <Text style={listStyles.itemDate}>12/07/2020</Text>
+              </View>
+
+              <View style={listStyles.itemSecondaryColumn}>
+                <FontAwesomeIcon style={listStyles.itemIcon} icon={faCompactDisc} />
+                <Text style={listStyles.itemRecordingCount}>5</Text>
+              </View>
+            </TouchableOpacity>
           )}
         />
       </View>
