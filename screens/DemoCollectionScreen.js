@@ -4,7 +4,8 @@ import {
   Text, View, FlatList, TouchableOpacity, TextInput,
 } from 'react-native';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faCompactDisc } from '@fortawesome/free-solid-svg-icons';
+import { faCompactDisc, faTrash } from '@fortawesome/free-solid-svg-icons';
+import Swipeable from 'react-native-gesture-handler/Swipeable';
 import listStyles from '../styles/list';
 import appStyles from '../styles/app';
 import searchStyles from '../styles/search';
@@ -14,6 +15,11 @@ import { SampleData } from '../data';
 function DemoCollectionScreen() {
   const navigation = useNavigation();
   const [searchText, onChangeSearchText] = React.useState('');
+
+  const setDemoName = (item, input) => {
+    console.log(item);
+    console.log(input);
+  };
 
   return (
     <View style={appStyles.container}>
@@ -31,20 +37,36 @@ function DemoCollectionScreen() {
         <FlatList
           data={SampleData}
           renderItem={({ item }) => (
-            <TouchableOpacity
-              style={listStyles.item}
-              onPress={() => navigation.navigate('DemoScreen', { item })}
+            <Swipeable
+              renderRightActions={() => (
+                <TouchableOpacity>
+                  <FontAwesomeIcon icon={faTrash} />
+                </TouchableOpacity>
+              )}
+              friction={2}
+              rightThreshold={30}
+              leftThreshold={80}
             >
-              <View style={listStyles.itemPrimaryColumn}>
-                <Text style={listStyles.itemHeader}>{item.title}</Text>
-                <Text style={listStyles.itemDate}>{item.dateCreated}</Text>
-              </View>
+              <TouchableOpacity
+                style={listStyles.item}
+                onPress={() => navigation.navigate('DemoScreen', { item })}
+              >
+                <View style={listStyles.itemPrimaryColumn}>
+                  <TextInput
+                    onChangeText={(input) => setDemoName(item, input)}
+                    style={listStyles.itemHeader}
+                  >
+                    {item.title}
+                  </TextInput>
+                  <Text style={listStyles.itemDate}>{item.dateCreated}</Text>
+                </View>
 
-              <View style={listStyles.itemSecondaryColumn}>
-                <FontAwesomeIcon style={listStyles.itemIcon} icon={faCompactDisc} />
-                <Text style={listStyles.itemRecordingCount}>{item.recordings.length}</Text>
-              </View>
-            </TouchableOpacity>
+                <View style={listStyles.itemSecondaryColumn}>
+                  <FontAwesomeIcon style={listStyles.itemIcon} icon={faCompactDisc} />
+                  <Text style={listStyles.itemRecordingCount}>{item.recordings.length}</Text>
+                </View>
+              </TouchableOpacity>
+            </Swipeable>
           )}
           keyExtractor={(_item, index) => index.toString()}
         />

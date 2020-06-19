@@ -14,6 +14,7 @@ const listStyles = StyleSheet.create({
     fontSize: 18,
     color: Colors.$info,
     marginBottom: 5,
+    alignSelf: 'flex-start',
   },
   itemPrimaryColumn: {
     alignSelf: 'stretch',

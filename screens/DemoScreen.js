@@ -12,14 +12,18 @@ function DemoScreen(_demo) {
   const demo = _demo.route.params.item;
   const [searchText, onChangeSearchText] = React.useState('');
 
+  const setRecordingName = (item, input) => {
+    console.log(item);
+    console.log(input);
+  };
+
   return (
     <View style={appStyles.container}>
       <View style={appStyles.body}>
         <Text style={appStyles.heading}>{demo.title}</Text>
-
         <TextInput
           style={searchStyles.input}
-          onChangeText={(text) => onChangeSearchText(text)}
+          onBlur={(text) => onChangeSearchText(text)}
           value={searchText}
           placeholder="Search by title or tags..."
           placeholderTextColor={Colors.$n6}
@@ -32,7 +36,12 @@ function DemoScreen(_demo) {
               style={listStyles.item}
             >
               <View style={listStyles.itemPrimaryColumn}>
-                <Text style={listStyles.itemHeader}>{item.title}</Text>
+                <TextInput
+                  style={listStyles.itemHeader}
+                  onBlur={(input) => setRecordingName(item, input)}
+                >
+                  {item.title}
+                </TextInput>
                 <Text style={listStyles.itemTags}>{tagStringBuilder(item.tags)}</Text>
               </View>
 
