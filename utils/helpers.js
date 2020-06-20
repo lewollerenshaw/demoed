@@ -19,8 +19,19 @@ const formatDate = (date) => {
   return `${date.getDate()} ${months[date.getMonth() - 1]} ${date.getFullYear()}`;
 };
 
+const hasSearchTextInTags = (search, tags) => {
+  let result = false;
+
+  tags.forEach((tag) => {
+    if (tag.includes(search)) result = true;
+  });
+
+  return result;
+};
+
 module.exports = {
   tagStringBuilder,
   sortListByDate,
   formatDate,
+  hasSearchTextInTags,
 };
