@@ -11,6 +11,7 @@ import appStyles from '../styles/app';
 import searchStyles from '../styles/search';
 import { Colors } from '../styles/colors';
 import { SampleData } from '../data';
+import { sortListByDate, formatDate } from '../utils/helpers';
 
 function DemoCollectionScreen() {
   const navigation = useNavigation();
@@ -35,7 +36,7 @@ function DemoCollectionScreen() {
         />
 
         <FlatList
-          data={SampleData}
+          data={sortListByDate(SampleData)}
           renderItem={({ item }) => (
             <Swipeable
               renderRightActions={() => (
@@ -58,7 +59,7 @@ function DemoCollectionScreen() {
                   >
                     {item.title}
                   </TextInput>
-                  <Text style={listStyles.itemDate}>{item.dateCreated}</Text>
+                  <Text style={listStyles.itemDate}>{formatDate(item.dateCreated)}</Text>
                 </View>
 
                 <View style={listStyles.itemSecondaryColumn}>

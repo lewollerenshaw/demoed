@@ -6,7 +6,7 @@ import appStyles from '../styles/app';
 import listStyles from '../styles/list';
 import { Colors } from '../styles/colors';
 import searchStyles from '../styles/search';
-import { tagStringBuilder } from '../utils/helpers';
+import { tagStringBuilder, formatDate, sortListByDate } from '../utils/helpers';
 
 function DemoScreen(_demo) {
   const demo = _demo.route.params.item;
@@ -30,7 +30,7 @@ function DemoScreen(_demo) {
         />
 
         <FlatList
-          data={demo.recordings}
+          data={sortListByDate(demo.recordings)}
           renderItem={({ item }) => (
             <TouchableOpacity
               style={listStyles.item}
@@ -42,7 +42,7 @@ function DemoScreen(_demo) {
                 >
                   {item.title}
                 </TextInput>
-                <Text style={listStyles.itemTags}>{tagStringBuilder(item.tags)}</Text>
+                <Text style={listStyles.itemInfo}>{`${formatDate(item.dateCreated)} - ${tagStringBuilder(item.tags)}`}</Text>
               </View>
 
               <View style={listStyles.itemSecondaryColumn}>

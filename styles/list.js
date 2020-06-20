@@ -41,7 +41,7 @@ const listStyles = StyleSheet.create({
   itemRecordingDuration: {
     opacity: 0.6,
   },
-  itemTags: {
+  itemInfo: {
     opacity: 0.6,
   },
 });
