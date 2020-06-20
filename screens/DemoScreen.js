@@ -10,11 +10,23 @@ import { tagStringBuilder, formatDate, sortListByDate } from '../utils/helpers';
 
 function DemoScreen(_demo) {
   const demo = _demo.route.params.item;
-  const [searchText, onChangeSearchText] = React.useState('');
+  const [list, setList] = React.useState(demo.recordings);
 
-  const setRecordingName = (item, input) => {
-    console.log(item);
-    console.log(input);
+  const updateSearchResults = (search) => {
+    const filter = [];
+
+    if (search) {
+      list.forEach((element) => {
+        const title = element.title.toLowerCase();
+        const tags = element.tags.map((tag) => tag.toLowerCase());
+
+        if (title.includes(search)) filter.push(element);
+      });
+
+      setList(filter);
+    } else {
+      setList(demo.recordings);
+    }
   };
 
   return (
@@ -23,14 +35,13 @@ function DemoScreen(_demo) {
         <Text style={appStyles.heading}>{demo.title}</Text>
         <TextInput
           style={searchStyles.input}
-          onBlur={(text) => onChangeSearchText(text)}
-          value={searchText}
+          onChangeText={(text) => updateSearchResults(text.toLowerCase())}
           placeholder="Search by title or tags..."
           placeholderTextColor={Colors.$n6}
         />
 
         <FlatList
-          data={sortListByDate(demo.recordings)}
+          data={sortListByDate(list)}
           renderItem={({ item }) => (
             <TouchableOpacity
               style={listStyles.item}
@@ -38,7 +49,6 @@ function DemoScreen(_demo) {
               <View style={listStyles.itemPrimaryColumn}>
                 <TextInput
                   style={listStyles.itemHeader}
-                  onBlur={(input) => setRecordingName(item, input)}
                 >
                   {item.title}
                 </TextInput>

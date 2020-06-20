@@ -15,11 +15,22 @@ import { sortListByDate, formatDate } from '../utils/helpers';
 
 function DemoCollectionScreen() {
   const navigation = useNavigation();
-  const [searchText, onChangeSearchText] = React.useState('');
+  const [list, setList] = React.useState(SampleData);
 
-  const setDemoName = (item, input) => {
-    console.log(item);
-    console.log(input);
+  const updateSearchResults = (search) => {
+    const filter = [];
+
+    if (search) {
+      list.forEach((element) => {
+        const title = element.title.toLowerCase();
+
+        if (title.includes(search)) filter.push(element);
+      });
+
+      setList(filter);
+    } else {
+      setList(SampleData);
+    }
   };
 
   return (
@@ -29,14 +40,13 @@ function DemoCollectionScreen() {
 
         <TextInput
           style={searchStyles.input}
-          onChangeText={(text) => onChangeSearchText(text)}
-          value={searchText}
+          onChangeText={(text) => updateSearchResults(text.toLowerCase())}
           placeholder="Search..."
           placeholderTextColor={Colors.$n6}
         />
 
         <FlatList
-          data={sortListByDate(SampleData)}
+          data={sortListByDate(list)}
           renderItem={({ item }) => (
             <Swipeable
               renderRightActions={() => (
@@ -54,7 +64,6 @@ function DemoCollectionScreen() {
               >
                 <View style={listStyles.itemPrimaryColumn}>
                   <TextInput
-                    onChangeText={(input) => setDemoName(item, input)}
                     style={listStyles.itemHeader}
                   >
                     {item.title}
