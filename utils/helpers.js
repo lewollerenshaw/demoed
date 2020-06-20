@@ -16,7 +16,7 @@ const sortListByDate = (list) => list.sort((a, b) => new Date(b.dateCreated) - n
 const formatDate = (date) => {
   const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
-  return `${date.getDate()} ${months[date.getMonth()]} ${date.getFullYear()}`;
+  return `${date.getDate()} ${months[date.getMonth() - 1]} ${date.getFullYear()}`;
 };
 
 module.exports = {
