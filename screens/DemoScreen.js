@@ -6,7 +6,9 @@ import appStyles from '../styles/app';
 import listStyles from '../styles/list';
 import { Colors } from '../styles/colors';
 import searchStyles from '../styles/search';
-import { tagStringBuilder, formatDate, sortListByDate } from '../utils/helpers';
+import {
+  tagStringBuilder, formatDate, sortListByDate, hasSearchTextInTags,
+} from '../utils/helpers';
 
 function DemoScreen(_demo) {
   const demo = _demo.route.params.item;
@@ -20,13 +22,11 @@ function DemoScreen(_demo) {
         const title = element.title.toLowerCase();
         const tags = element.tags.map((tag) => tag.toLowerCase());
 
-        if (title.includes(search)) filter.push(element);
+        if (title.includes(search) || hasSearchTextInTags(search, tags)) filter.push(element);
       });
 
       setList(filter);
-    } else {
-      setList(demo.recordings);
-    }
+    } else setList(demo.recordings);
   };
 
   return (
