@@ -9,6 +9,7 @@ import {
 export default function demoReducer(state = initialState.demos, action) {
   switch (action.type) {
     case ADD_DEMO:
+      state.push(action.demo);
       return [...state];
     case GET_DEMOS:
       return [...state];

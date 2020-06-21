@@ -1,9 +1,11 @@
 import React from 'react';
 import * as FileSystem from 'expo-file-system';
 import { Audio } from 'expo-av';
-import { View, Text, TouchableWithoutFeedback, TouchableOpacity } from 'react-native';
-import { useSelector } from 'react-redux';
+import { View, Text, TouchableWithoutFeedback, AsyncStorage } from 'react-native';
+import { useSelector, useDispatch } from 'react-redux';
+import { addDemo } from '../redux/actions/demoActions';
 import Demo from '../models/demo';
+import Recording from '../models/recording';
 
 function record() {
   const [permissions, setPermissions] = React.useState();
@@ -11,7 +13,11 @@ function record() {
   const [durationMillis, setDurationMillis] = React.useState();
   const [isDoneRecording, setIsDoneRecording] = React.useState();
   const [recordingInstance, setRecordingInstance] = React.useState(null);
-  const globalState = useSelector((state) => state.global.currentScreen);
+  const currentScreen = useSelector((state) => state.global.currentScreen);
+  const demos = useSelector((state) => state.demos);
+  const dispatch = useDispatch();
+
+  const STORAGE_KEY = 'demos: demo';
 
   const getPermissions = async () => {
     const response = await Audio.requestPermissionsAsync();
@@ -21,7 +27,7 @@ function record() {
 
   const recordingCallback = (status) => {
     console.log(status);
-    { durationMillis, isRecording, isDoneRecording; }
+    durationMillis, isRecording, isDoneRecording;
   };
 
   const createRecordingInstance = () => {
@@ -57,7 +63,7 @@ function record() {
   };
 
   const moveRecordingToNewFolder = async () => {
-    const folder = await `${FileSystem.documentDirectory} recordings/`;
+    const folder = await `${FileSystem.documentDirectory}recordings/`;
     await FileSystem.makeDirectoryAsync(folder, { intermediates: true });
 
     const URI = await recordingInstance.getURI();
@@ -67,8 +73,31 @@ function record() {
       to: folder + recordingName,
     });
 
+    console.log("Folder:", folder);
     const res = await FileSystem.readDirectoryAsync(folder);
     console.log(res);
+
+    return folder + recordingName;
+  };
+
+  const storeRecording = async (URI, response) => {
+    const recording = new Recording('Recording Title', response.durationMillis, ['Tag1, Tag2'], URI, 'Date');
+
+    // If currently on Your Collection screen
+    if (currentScreen === 'DemoCollectionScreen') {
+      const demo = new Demo('123', 'Demo Title', [recording], 'Date');
+
+      await dispatch(addDemo(demo));
+
+      // Check if async storage is not empty
+      const storageResponse = await AsyncStorage.getItem(STORAGE_KEY);
+      const storageData = JSON.parse(storageResponse);
+      if (storageData !== null) await AsyncStorage.mergeItem(STORAGE_KEY, JSON.stringify(demo));
+      else await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(demo));
+    }
+
+    // If on Demo Screen
+    console.log("On demo screen");
   };
 
   const stopRecording = async () => {
@@ -77,17 +106,15 @@ function record() {
       const response = await recordingInstance.stopAndUnloadAsync();
       setIsRecording(false);
       setDurationMillis(response.durationMillis);
-      moveRecordingToNewFolder();
+      const URI = await moveRecordingToNewFolder();
 
-      const demo = new Demo('123', 'Title', ['1', '2'], 'Date');
-      console.log(demo);
+      await storeRecording(URI, response);
 
       setRecordingInstance(null);
     } catch (error) {
       console.log(error);
     }
   };
-
 
   const handleRecordingPress = () => {
     console.log('Handling recording press...');
@@ -101,6 +128,25 @@ function record() {
   React.useEffect(() => {
     getPermissions();
   }, []);
+
+  // Debug functions
+  async function checkDemosInStorage() {
+    const response = await AsyncStorage.getItem(STORAGE_KEY);
+    console.log(response);
+  }
+
+  async function checkRecordingsInDirectory() {
+    const directory = await FileSystem.readDirectoryAsync(`${FileSystem.documentDirectory}recordings/`);
+    console.log(directory);
+  }
+
+  async function removeDemosFromStorage() {
+    await AsyncStorage.clear();
+  }
+
+  async function removeRecordingsFromDir() {
+    await FileSystem.deleteAsync(`${FileSystem.documentDirectory}recordings/`);
+  }
 
   return (
     <View>
@@ -161,6 +207,100 @@ function record() {
         </TouchableWithoutFeedback>
       </View>
 
+      <View style={{
+        width: '100%',
+        height: 40,
+        border: 'solid',
+        borderWidth: 1,
+        borderColor: 'black',
+        justifyContent: 'center',
+      }}
+      >
+        <TouchableWithoutFeedback onPress={() => console.log(demos)}>
+          <Text style={{
+            alignSelf: 'center',
+          }}
+          >
+            Check demos in redux
+          </Text>
+        </TouchableWithoutFeedback>
+      </View>
+
+      <View style={{
+        width: '100%',
+        height: 40,
+        border: 'solid',
+        borderWidth: 1,
+        borderColor: 'black',
+        justifyContent: 'center',
+      }}
+      >
+        <TouchableWithoutFeedback onPress={() => checkDemosInStorage()}>
+          <Text style={{
+            alignSelf: 'center',
+          }}
+          >
+            Check demos in async storage
+          </Text>
+        </TouchableWithoutFeedback>
+      </View>
+
+      <View style={{
+        width: '100%',
+        height: 40,
+        border: 'solid',
+        borderWidth: 1,
+        borderColor: 'black',
+        justifyContent: 'center',
+      }}
+      >
+        <TouchableWithoutFeedback onPress={() => checkRecordingsInDirectory()}>
+          <Text style={{
+            alignSelf: 'center',
+          }}
+          >
+            Check recordings in directory
+          </Text>
+        </TouchableWithoutFeedback>
+      </View>
+
+      <View style={{
+        width: '100%',
+        height: 40,
+        border: 'solid',
+        borderWidth: 1,
+        borderColor: 'black',
+        justifyContent: 'center',
+      }}
+      >
+        <TouchableWithoutFeedback onPress={() => removeDemosFromStorage()}>
+          <Text style={{
+            alignSelf: 'center',
+          }}
+          >
+            Remove demos in local storage
+          </Text>
+        </TouchableWithoutFeedback>
+      </View>
+
+      <View style={{
+        width: '100%',
+        height: 40,
+        border: 'solid',
+        borderWidth: 1,
+        borderColor: 'black',
+        justifyContent: 'center',
+      }}
+      >
+        <TouchableWithoutFeedback onPress={() => removeRecordingsFromDir()}>
+          <Text style={{
+            alignSelf: 'center',
+          }}
+          >
+            Remove recordings from directory
+          </Text>
+        </TouchableWithoutFeedback>
+      </View>
 
     </View>
   );
