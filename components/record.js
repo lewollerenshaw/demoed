@@ -36,7 +36,7 @@ function record() {
 
   const startRecording = async () => {
     try {
-      /*await Audio.setAudioModeAsync({
+      await Audio.setAudioModeAsync({
         allowsRecordingIOS: true,
         interruptionModeIOS: Audio.INTERRUPTION_MODE_IOS_DO_NOT_MIX,
         playsInSilentModeIOS: true,
@@ -47,7 +47,7 @@ function record() {
         Audio.RECORDING_OPTIONS_PRESET_HIGH_QUALITY,
       );
 
-      await recordingInstance.startAsync(); */
+      await recordingInstance.startAsync();
 
       console.log('Start recording');
       setIsRecording(true);
@@ -59,19 +59,27 @@ function record() {
   const stopRecording = async () => {
     try {
       console.log('Stop recording');
+      const response = await recordingInstance.stopAndUnloadAsync();
+
       setIsRecording(false);
+      setDurationMillis(response.durationMillis);
+
+
+      const folder = await `${FileSystem.documentDirectory} recordings/`;
+      await FileSystem.makeDirectoryAsync(folder, { intermediates: true });
+
+      const URI = await recordingInstance.getURI();
+      const recordingName = URI.substring(URI.lastIndexOf('/') + 1);
+      await FileSystem.moveAsync({
+        from: URI,
+        to: folder + recordingName,
+      });
+
+      const res = await FileSystem.readDirectoryAsync(folder);
+      console.log(res);
+
+
       setRecordingInstance(null);
-      /* const response = await recordingInstance.stopAndUnloadAsync();
-
-       setIsRecording(false);
-       setDurationMillis(response.durationMillis);
-       setRecordingInstance(null);
-
-       let folder = await FileSystemService._getDirectory();
-       await FileSystemService._makeDirectory(folder);
-
-       // Set path to recording file after file has been moved
-       let URI = await FileSystemService._moveFile(recording, folder); */
     } catch (error) {
       console.log(error);
     }
@@ -148,6 +156,8 @@ function record() {
           </Text>
         </TouchableWithoutFeedback>
       </View>
+
+
     </View>
   );
 }
