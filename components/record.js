@@ -3,6 +3,7 @@ import * as FileSystem from 'expo-file-system';
 import { Audio } from 'expo-av';
 import { View, Text, TouchableWithoutFeedback, TouchableOpacity } from 'react-native';
 import { useSelector } from 'react-redux';
+import Demo from '../models/demo';
 
 function record() {
   const [permissions, setPermissions] = React.useState();
@@ -18,20 +19,19 @@ function record() {
     setPermissions(response.granted);
   };
 
-  const createRecordingInstance = () => {
-    if (recordingInstance == null) {
-      console.log('Create recording instance');
-      const newRecordingInstance = new Audio.Recording();
-      // newRecordingInstance.setOnRecordingStatusUpdate(recordingCallback);
-      // newRecordingInstance.setProgressUpdateInterval(200);
-      setRecordingInstance(newRecordingInstance);
-    }
+  const recordingCallback = (status) => {
+    console.log(status);
+    { durationMillis, isRecording, isDoneRecording; }
   };
 
-  function recordingCallback() {
-    console.log('Recording callback');
-    console.log(recordingInstance);
-    { durationMillis, isRecording, isDoneRecording; }
+  const createRecordingInstance = () => {
+    if (recordingInstance == null) {
+      console.log('Creating recording instance...');
+      const newRecordingInstance = new Audio.Recording();
+      newRecordingInstance.setOnRecordingStatusUpdate(recordingCallback);
+      newRecordingInstance.setProgressUpdateInterval(200);
+      setRecordingInstance(newRecordingInstance);
+    }
   };
 
   const startRecording = async () => {
@@ -49,35 +49,38 @@ function record() {
 
       await recordingInstance.startAsync();
 
-      console.log('Start recording');
+      console.log('Recording...');
       setIsRecording(true);
     } catch (error) {
       console.log(error);
     }
   };
 
+  const moveRecordingToNewFolder = async () => {
+    const folder = await `${FileSystem.documentDirectory} recordings/`;
+    await FileSystem.makeDirectoryAsync(folder, { intermediates: true });
+
+    const URI = await recordingInstance.getURI();
+    const recordingName = URI.substring(URI.lastIndexOf('/') + 1);
+    await FileSystem.moveAsync({
+      from: URI,
+      to: folder + recordingName,
+    });
+
+    const res = await FileSystem.readDirectoryAsync(folder);
+    console.log(res);
+  };
+
   const stopRecording = async () => {
     try {
-      console.log('Stop recording');
+      console.log('Stopping recording...');
       const response = await recordingInstance.stopAndUnloadAsync();
-
       setIsRecording(false);
       setDurationMillis(response.durationMillis);
+      moveRecordingToNewFolder();
 
-
-      const folder = await `${FileSystem.documentDirectory} recordings/`;
-      await FileSystem.makeDirectoryAsync(folder, { intermediates: true });
-
-      const URI = await recordingInstance.getURI();
-      const recordingName = URI.substring(URI.lastIndexOf('/') + 1);
-      await FileSystem.moveAsync({
-        from: URI,
-        to: folder + recordingName,
-      });
-
-      const res = await FileSystem.readDirectoryAsync(folder);
-      console.log(res);
-
+      const demo = new Demo('123', 'Title', ['1', '2'], 'Date');
+      console.log(demo);
 
       setRecordingInstance(null);
     } catch (error) {
@@ -85,8 +88,9 @@ function record() {
     }
   };
 
+
   const handleRecordingPress = () => {
-    console.log('Handle recording press');
+    console.log('Handling recording press...');
     if (permissions) if (isRecording) stopRecording(); else createRecordingInstance();
   };
 
