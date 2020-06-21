@@ -7,9 +7,9 @@ import {
 export default function globalReducer(state = initialState.global, action) {
   switch (action.type) {
     case SET_CURRENT_SCREEN:
-      return [...state];
+      return { ...state, currentScreen: action.screenId };
     case SET_DARK_MODE:
-      return [...state];
+      return { ...state };
     default:
       return state;
   }

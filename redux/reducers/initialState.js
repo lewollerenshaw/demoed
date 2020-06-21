@@ -77,6 +77,6 @@ export default {
   },
   global: {
     darkMode: false,
-    currentScreen: null,
+    currentScreen: 'DemoCollectionScreen',
   },
 };
