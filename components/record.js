@@ -1,7 +1,9 @@
 import React from 'react';
 import * as FileSystem from 'expo-file-system';
 import { Audio } from 'expo-av';
-import { View, Text, TouchableWithoutFeedback, AsyncStorage } from 'react-native';
+import {
+  View, Text, TouchableWithoutFeedback, AsyncStorage,
+} from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 import { addDemo } from '../redux/actions/demoActions';
 import Demo from '../models/demo';
@@ -10,8 +12,6 @@ import Recording from '../models/recording';
 function record() {
   const [permissions, setPermissions] = React.useState();
   const [isRecording, setIsRecording] = React.useState(false);
-  const [durationMillis, setDurationMillis] = React.useState();
-  const [isDoneRecording, setIsDoneRecording] = React.useState();
   const [recordingInstance, setRecordingInstance] = React.useState(null);
   const currentScreen = useSelector((state) => state.global.currentScreen);
   const demos = useSelector((state) => state.demos);
@@ -27,7 +27,7 @@ function record() {
 
   const recordingCallback = (status) => {
     console.log(status);
-    durationMillis, isRecording, isDoneRecording;
+    //durationMillis, isRecording, isDoneRecording;
   };
 
   const createRecordingInstance = () => {
@@ -41,25 +41,21 @@ function record() {
   };
 
   const startRecording = async () => {
-    try {
-      await Audio.setAudioModeAsync({
-        allowsRecordingIOS: true,
-        interruptionModeIOS: Audio.INTERRUPTION_MODE_IOS_DO_NOT_MIX,
-        playsInSilentModeIOS: true,
-        interruptionModeAndroid: Audio.INTERRUPTION_MODE_ANDROID_DO_NOT_MIX,
-        playThroughEarpieceAndroid: false,
-      });
-      await recordingInstance.prepareToRecordAsync(
-        Audio.RECORDING_OPTIONS_PRESET_HIGH_QUALITY,
-      );
+    await Audio.setAudioModeAsync({
+      allowsRecordingIOS: true,
+      interruptionModeIOS: Audio.INTERRUPTION_MODE_IOS_DO_NOT_MIX,
+      playsInSilentModeIOS: true,
+      interruptionModeAndroid: Audio.INTERRUPTION_MODE_ANDROID_DO_NOT_MIX,
+      playThroughEarpieceAndroid: false,
+    });
+    await recordingInstance.prepareToRecordAsync(
+      Audio.RECORDING_OPTIONS_PRESET_HIGH_QUALITY,
+    );
 
-      await recordingInstance.startAsync();
+    await recordingInstance.startAsync();
 
-      console.log('Recording...');
-      setIsRecording(true);
-    } catch (error) {
-      console.log(error);
-    }
+    console.log('Recording...');
+    setIsRecording(true);
   };
 
   const moveRecordingToNewFolder = async () => {
@@ -73,7 +69,7 @@ function record() {
       to: folder + recordingName,
     });
 
-    console.log("Folder:", folder);
+    console.log('Folder:', folder);
     const res = await FileSystem.readDirectoryAsync(folder);
     console.log(res);
 
@@ -87,33 +83,29 @@ function record() {
     if (currentScreen === 'DemoCollectionScreen') {
       const demo = new Demo('123', 'Demo Title', [recording], 'Date');
 
+      // Store in redux
       await dispatch(addDemo(demo));
 
+      // Store in async storage
       // Check if async storage is not empty
-      const storageResponse = await AsyncStorage.getItem(STORAGE_KEY);
-      const storageData = JSON.parse(storageResponse);
+      const storageData = JSON.parse(await AsyncStorage.getItem(STORAGE_KEY));
       if (storageData !== null) await AsyncStorage.mergeItem(STORAGE_KEY, JSON.stringify(demo));
       else await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(demo));
+    } else {
+      // If on Demo Screen
+      console.log('On demo screen');
     }
-
-    // If on Demo Screen
-    console.log("On demo screen");
   };
 
   const stopRecording = async () => {
-    try {
-      console.log('Stopping recording...');
-      const response = await recordingInstance.stopAndUnloadAsync();
-      setIsRecording(false);
-      setDurationMillis(response.durationMillis);
-      const URI = await moveRecordingToNewFolder();
+    console.log('Stopping recording...');
+    const response = await recordingInstance.stopAndUnloadAsync();
+    setIsRecording(false);
+    const URI = await moveRecordingToNewFolder();
 
-      await storeRecording(URI, response);
+    await storeRecording(URI, response);
 
-      setRecordingInstance(null);
-    } catch (error) {
-      console.log(error);
-    }
+    setRecordingInstance(null);
   };
 
   const handleRecordingPress = () => {
