@@ -6,6 +6,7 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faCompactDisc, faTrash } from '@fortawesome/free-solid-svg-icons';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
+import { useSelector } from 'react-redux';
 import listStyles from '../styles/list';
 import appStyles from '../styles/app';
 import searchStyles from '../styles/search';
@@ -15,7 +16,12 @@ import { sortListByDate, formatDate } from '../utils/helpers';
 
 function DemoCollectionScreen() {
   const navigation = useNavigation();
-  const [list, setList] = React.useState(SampleData);
+  const [list, setList] = React.useState([]);
+  const demos = useSelector((state) => state.demos);
+
+  React.useEffect(() => {
+    setList(demos);
+  }, [demos]);
 
   const updateSearchResults = (search) => {
     const filter = [];
@@ -29,7 +35,7 @@ function DemoCollectionScreen() {
 
       setList(filter);
     } else {
-      setList(SampleData);
+      setList(demos);
     }
   };
 

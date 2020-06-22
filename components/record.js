@@ -14,6 +14,7 @@ function record() {
   const [isRecording, setIsRecording] = React.useState(false);
   const [recordingInstance, setRecordingInstance] = React.useState(null);
   const currentScreen = useSelector((state) => state.global.currentScreen);
+  const currentDemoId = useSelector((state) => state.global.currentDemoId);
   const demos = useSelector((state) => state.demos);
   const dispatch = useDispatch();
 
@@ -77,11 +78,11 @@ function record() {
   };
 
   const storeRecording = async (URI, response) => {
-    const recording = new Recording('Recording Title', response.durationMillis, ['Tag1, Tag2'], URI, 'Date');
+    const recording = new Recording('Recording Title', response.durationMillis, ['Tag1, Tag2'], URI, new Date(2013, 3, 25, 10, 33, 30));
 
     // If currently on Your Collection screen
     if (currentScreen === 'DemoCollectionScreen') {
-      const demo = new Demo('123', 'Demo Title', [recording], 'Date');
+      const demo = new Demo('123', 'Demo Title', [recording], new Date(2013, 3, 25, 10, 33, 30));
 
       // Store in redux
       await dispatch(addDemo(demo));
@@ -120,6 +121,10 @@ function record() {
   React.useEffect(() => {
     getPermissions();
   }, []);
+
+  React.useEffect(() => {
+    console.log("currentDemoId:", currentDemoId);
+  }, [currentDemoId]);
 
   // Debug functions
   async function checkDemosInStorage() {

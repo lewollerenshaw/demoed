@@ -2,6 +2,8 @@ import * as React from 'react';
 import {
   Text, View, FlatList, TouchableOpacity, TextInput,
 } from 'react-native';
+import { useDispatch } from 'react-redux';
+import { setCurrentDemoId } from '../redux/actions/globalActions';
 import appStyles from '../styles/app';
 import listStyles from '../styles/list';
 import { Colors } from '../styles/colors';
@@ -13,6 +15,11 @@ import {
 function DemoScreen(_demo) {
   const demo = _demo.route.params.item;
   const [list, setList] = React.useState(demo.recordings);
+  const dispatch = useDispatch();
+
+  React.useEffect(() => {
+    dispatch(setCurrentDemoId(demo.id));
+  }, []);
 
   const updateSearchResults = (search) => {
     const filter = [];

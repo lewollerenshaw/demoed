@@ -7,5 +7,6 @@ export default {
   global: {
     darkMode: false,
     currentScreen: 'DemoCollectionScreen',
+    currentDemoId: '',
   },
 };
