@@ -60,26 +60,30 @@ function DemoCollectionScreen() {
   return (
     <View style={appStyles.container}>
       <View style={appStyles.body}>
-        <Text style={appStyles.heading}>Your collection</Text>
+        <View style={appStyles.headerContainer}>
+          <Text style={appStyles.heading}>Your collection</Text>
 
-        <TextInput
-          style={searchStyles.input}
-          onChangeText={(text) => updateSearchResults(text.toLowerCase())}
-          placeholder="Search..."
-          placeholderTextColor={Colors.$n6}
-        />
+          <TextInput
+            style={searchStyles.input}
+            onChangeText={(text) => updateSearchResults(text.toLowerCase())}
+            placeholder="Search..."
+            placeholderTextColor={Colors.$n6}
+          />
+        </View>
 
         <FlatList
           data={sortListByDate(list)}
           renderItem={({ item }) => (
             <Swipeable
               renderRightActions={() => (
-                <TouchableOpacity>
-                  <FontAwesomeIcon icon={faTrash} />
+                <TouchableOpacity
+                  style={listStyles.deleteButton}
+                >
+                  <FontAwesomeIcon style={listStyles.deleteButtonIcon} icon={faTrash} />
                 </TouchableOpacity>
               )}
               friction={2}
-              rightThreshold={30}
+              rightThreshold={80}
               leftThreshold={80}
             >
               <TouchableOpacity
