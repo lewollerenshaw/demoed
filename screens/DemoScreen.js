@@ -2,9 +2,11 @@ import * as React from 'react';
 import {
   Text, View, FlatList, TouchableOpacity, TextInput,
 } from 'react-native';
+import { useSelector, useDispatch } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
+import { setCurrentDemoId } from '../redux/actions/globalActions';
 import appStyles from '../styles/app';
 import listStyles from '../styles/list';
 import { Colors } from '../styles/colors';
@@ -15,7 +17,19 @@ import {
 
 function DemoScreen(_demo) {
   const demo = _demo.route.params.item;
-  const [list, setList] = React.useState(demo.recordings);
+  const [list, setList] = React.useState([]);
+  const demos = useSelector((state) => state.demos);
+  const dispatch = useDispatch();
+
+  React.useEffect(() => {
+    dispatch(setCurrentDemoId(demo.id));
+  }, []);
+
+  // When recording gets added to current demo
+  // Get demo from redux with newely added recordings
+  React.useEffect(() => {
+    setList(demos[0].recordings);
+  }, [demos]);
 
   const updateSearchResults = (search) => {
     const filter = [];
@@ -29,7 +43,7 @@ function DemoScreen(_demo) {
       });
 
       setList(filter);
-    } else setList(demo.recordings);
+    } else setList(demos);
   };
 
   return (

@@ -9,13 +9,13 @@ import {
 export default function binReducer(state = initialState.bin, action) {
   switch (action.type) {
     case ADD_DEMO:
-      return [...state];
+      return { ...state };
     case ADD_RECORDING:
-      return [...state];
+      return { ...state };
     case DELETE_ALL:
-      return [...state];
+      return { ...state };
     case RESTORE:
-      return [...state];
+      return { ...state };
     default:
       return state;
   }
