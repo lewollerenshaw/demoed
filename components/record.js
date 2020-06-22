@@ -22,7 +22,6 @@ function record() {
 
   const getPermissions = async () => {
     const response = await Audio.requestPermissionsAsync();
-    console.log(response);
     setPermissions(response.granted);
   };
 
@@ -32,7 +31,6 @@ function record() {
 
   const createRecordingInstance = () => {
     if (recordingInstance == null) {
-      console.log('Creating recording instance...');
       const newRecordingInstance = new Audio.Recording();
       newRecordingInstance.setOnRecordingStatusUpdate(recordingCallback);
       newRecordingInstance.setProgressUpdateInterval(200);
@@ -42,7 +40,6 @@ function record() {
 
   const startRecording = async () => {
     setIsRecording(true);
-    console.log('Recording...');
 
     await Audio.setAudioModeAsync({
       allowsRecordingIOS: true,
@@ -68,11 +65,6 @@ function record() {
       from: URI,
       to: folder + recordingName,
     });
-
-    console.log('Folder:', folder);
-    const res = await FileSystem.readDirectoryAsync(folder);
-    console.log(res);
-
     return folder + recordingName;
   };
 
@@ -87,47 +79,56 @@ function record() {
       await dispatch(addDemo(demo));
 
       // Store in async storage
-      // Check if async storage is not empty
+      // 1. Get current data in async storage
       const storageData = JSON.parse(await AsyncStorage.getItem(STORAGE_KEY));
-      if (storageData !== null) await AsyncStorage.mergeItem(STORAGE_KEY, JSON.stringify(demo));
-      else await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(demo));
+      // 2. Check if async storage is not empty
+      if (storageData !== null) {
+        storageData.push(demo);
+        await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(storageData));
+      } else await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify([demo]));
     } else {
       // If on Demo Screen
-      console.log('On demo screen');
 
       // Store in existing demo in redux
       await dispatch(addRecording(recording, currentDemoId));
 
       // Store in existing demo in async storage
+      // 1. Get current data in async storage
+      const storageData = await AsyncStorage.getItem(STORAGE_KEY);
+      const storageDataJSON = JSON.parse(storageData);
+
+      // 2. Get current demo and push new recording
+      storageDataJSON.forEach((demo) => {
+        if (demo.id.includes(currentDemoId)) demo.recordings.push(recording);
+      });
+
+      // 3. Set in async storage
+      await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(storageDataJSON));
     }
   };
 
   const stopRecording = async () => {
-    console.log('Stopping recording...');
     const response = await recordingInstance.stopAndUnloadAsync();
     setIsRecording(false);
-    const URI = await moveRecordingToNewFolder();
-
-    await storeRecording(URI, response);
-
     setRecordingInstance(null);
+
+    const URI = await moveRecordingToNewFolder();
+    await storeRecording(URI, response);
   };
 
   const handleRecordingPress = () => {
-    console.log('Handling recording press...');
     if (permissions) if (isRecording) stopRecording(); else createRecordingInstance();
   };
-
-  React.useEffect(() => {
-    if (recordingInstance !== null && !isRecording) startRecording();
-  }, [recordingInstance]);
 
   React.useEffect(() => {
     getPermissions();
   }, []);
 
   React.useEffect(() => {
-    console.log("currentDemoId:", currentDemoId);
+    if (recordingInstance !== null && !isRecording) startRecording();
+  }, [recordingInstance]);
+
+  React.useEffect(() => {
   }, [currentDemoId]);
 
   // Debug functions

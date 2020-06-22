@@ -33,4 +33,3 @@ export function deleteRecording(recording) {
 export function updateRecording(recording) {
   return { type: UPDATE_RECORDING, recording };
 }
-

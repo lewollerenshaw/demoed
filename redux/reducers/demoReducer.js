@@ -4,7 +4,7 @@ import {
   GET_DEMOS,
   DELETE_DEMO,
   UPDATE_DEMO,
-  ADD_REC,
+  ADD_RECORDING,
   DELETE_RECORDING,
   UPDATE_RECORDING,
 } from '../actions/demoActions';
@@ -15,12 +15,13 @@ export default function demoReducer(state = initialState.demos, action) {
       state.push(action.demo);
       return [...state];
     case GET_DEMOS:
+      state.push(action.demos[0]);
       return [...state];
     case DELETE_DEMO:
       return [...state];
     case UPDATE_DEMO:
       return [...state];
-    case ADD_REC:
+    case ADD_RECORDING:
       state.forEach((demo) => {
         if (demo.id.includes(action.currentDemoId)) demo.recordings.push(action.recording);
       });

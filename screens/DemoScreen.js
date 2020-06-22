@@ -40,7 +40,7 @@ function DemoScreen(_demo) {
       });
 
       setList(filter);
-    } else setList(recordings);
+    } else setList(demos);
   };
 
   return (
