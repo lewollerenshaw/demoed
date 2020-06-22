@@ -5,7 +5,7 @@ import {
   View, Text, TouchableWithoutFeedback, AsyncStorage,
 } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
-import { addDemo } from '../redux/actions/demoActions';
+import { addDemo, addRecording } from '../redux/actions/demoActions';
 import Demo from '../models/demo';
 import Recording from '../models/recording';
 
@@ -28,7 +28,6 @@ function record() {
 
   const recordingCallback = (status) => {
     console.log(status);
-    //durationMillis, isRecording, isDoneRecording;
   };
 
   const createRecordingInstance = () => {
@@ -42,6 +41,9 @@ function record() {
   };
 
   const startRecording = async () => {
+    setIsRecording(true);
+    console.log('Recording...');
+
     await Audio.setAudioModeAsync({
       allowsRecordingIOS: true,
       interruptionModeIOS: Audio.INTERRUPTION_MODE_IOS_DO_NOT_MIX,
@@ -54,9 +56,6 @@ function record() {
     );
 
     await recordingInstance.startAsync();
-
-    console.log('Recording...');
-    setIsRecording(true);
   };
 
   const moveRecordingToNewFolder = async () => {
@@ -95,6 +94,11 @@ function record() {
     } else {
       // If on Demo Screen
       console.log('On demo screen');
+
+      // Store in existing demo in redux
+      await dispatch(addRecording(recording, currentDemoId));
+
+      // Store in existing demo in async storage
     }
   };
 
