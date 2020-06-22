@@ -8,11 +8,14 @@ const appStyles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.$lightShade,
-    padding: 10,
   },
   body: {
     paddingTop: statusBarHeight,
     color: Colors.$primary,
+  },
+  headerContainer: {
+    paddingHorizontal: 10,
+    paddingTop: 10,
   },
   heading: {
     fontSize: 32,

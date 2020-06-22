@@ -2,6 +2,9 @@ import * as React from 'react';
 import {
   Text, View, FlatList, TouchableOpacity, TextInput,
 } from 'react-native';
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
+import { faTrash } from '@fortawesome/free-solid-svg-icons';
+import Swipeable from 'react-native-gesture-handler/Swipeable';
 import appStyles from '../styles/app';
 import listStyles from '../styles/list';
 import { Colors } from '../styles/colors';
@@ -32,33 +35,48 @@ function DemoScreen(_demo) {
   return (
     <View style={appStyles.container}>
       <View style={appStyles.body}>
-        <Text style={appStyles.heading}>{demo.title}</Text>
-        <TextInput
-          style={searchStyles.input}
-          onChangeText={(text) => updateSearchResults(text.toLowerCase())}
-          placeholder="Search by title or tags..."
-          placeholderTextColor={Colors.$n6}
-        />
+        <View style={appStyles.headerContainer}>
+          <Text style={appStyles.heading}>{demo.title}</Text>
+          <TextInput
+            style={searchStyles.input}
+            onChangeText={(text) => updateSearchResults(text.toLowerCase())}
+            placeholder="Search by title or tags..."
+            placeholderTextColor={Colors.$n6}
+          />
+        </View>
 
         <FlatList
           data={sortListByDate(list)}
           renderItem={({ item }) => (
-            <TouchableOpacity
-              style={listStyles.item}
-            >
-              <View style={listStyles.itemPrimaryColumn}>
-                <TextInput
-                  style={listStyles.itemHeader}
+            <Swipeable
+              renderRightActions={() => (
+                <TouchableOpacity
+                  style={listStyles.deleteButton}
                 >
-                  {item.title}
-                </TextInput>
-                <Text style={listStyles.itemInfo}>{`${formatDate(item.dateCreated)} - ${tagStringBuilder(item.tags)}`}</Text>
-              </View>
+                  <FontAwesomeIcon style={listStyles.deleteButtonIcon} icon={faTrash} />
+                </TouchableOpacity>
+              )}
+              friction={2}
+              rightThreshold={80}
+              leftThreshold={80}
+            >
+              <TouchableOpacity
+                style={listStyles.item}
+              >
+                <View style={listStyles.itemPrimaryColumn}>
+                  <TextInput
+                    style={listStyles.itemHeader}
+                  >
+                    {item.title}
+                  </TextInput>
+                  <Text style={listStyles.itemInfo}>{`${formatDate(item.dateCreated)} - ${tagStringBuilder(item.tags)}`}</Text>
+                </View>
 
-              <View style={listStyles.itemSecondaryColumn}>
-                <Text style={listStyles.itemRecordingDuration}>{item.duration}</Text>
-              </View>
-            </TouchableOpacity>
+                <View style={listStyles.itemSecondaryColumn}>
+                  <Text style={listStyles.itemRecordingDuration}>{item.duration}</Text>
+                </View>
+              </TouchableOpacity>
+            </Swipeable>
           )}
           keyExtractor={(_item, index) => index.toString()}
         />
