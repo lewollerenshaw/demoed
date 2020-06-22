@@ -12,14 +12,29 @@ const appStyles = StyleSheet.create({
   body: {
     paddingTop: statusBarHeight,
     color: Colors.$primary,
+    flex: 1,
+    flexDirection: 'column',
   },
   headerContainer: {
     paddingHorizontal: 10,
     paddingTop: 10,
   },
+  headingRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
   heading: {
     fontSize: 32,
     color: Colors.$info,
+  },
+  recentlyDeleted: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingRight: 10,
+  },
+  recentlyDeletedIcon: {
+    color: Colors.$info,
+    opacity: 0.8,
   },
 });
 

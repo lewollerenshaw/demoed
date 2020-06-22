@@ -3,6 +3,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import DemoScreen from './screens/DemoScreen';
 import DemoCollectionScreen from './screens/DemoCollectionScreen';
+import RecentlyDeletedScreen from './screens/RecentlyDeletedScreen';
 
 const Stack = createStackNavigator();
 
@@ -17,6 +18,7 @@ function App() {
       >
         <Stack.Screen name="DemoCollectionScreen" component={DemoCollectionScreen} />
         <Stack.Screen name="DemoScreen" component={DemoScreen} />
+        <Stack.Screen name="RecentlyDeletedScreen" component={RecentlyDeletedScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

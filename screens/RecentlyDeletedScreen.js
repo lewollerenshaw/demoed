@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { useNavigation } from '@react-navigation/native';
 import {
   Text, View, FlatList, TouchableOpacity, TextInput,
 } from 'react-native';
@@ -10,53 +9,29 @@ import listStyles from '../styles/list';
 import appStyles from '../styles/app';
 import searchStyles from '../styles/search';
 import { Colors } from '../styles/colors';
+import { formatDate } from '../utils/helpers';
 import { SampleData } from '../data';
-import { sortListByDate, formatDate } from '../utils/helpers';
 
-function DemoCollectionScreen() {
-  const navigation = useNavigation();
-  const [list, setList] = React.useState(SampleData);
-
-  const updateSearchResults = (search) => {
-    const filter = [];
-
-    if (search) {
-      list.forEach((element) => {
-        const title = element.title.toLowerCase();
-
-        if (title.includes(search)) filter.push(element);
-      });
-
-      setList(filter);
-    } else {
-      setList(SampleData);
-    }
-  };
+function RecentlyDeletedScreen() {
+  const list = SampleData;
 
   return (
     <View style={appStyles.container}>
       <View style={appStyles.body}>
         <View style={appStyles.headerContainer}>
           <View style={appStyles.headingRow}>
-            <Text style={appStyles.heading}>Your collection</Text>
-
-            {true && (
-              <TouchableOpacity style={appStyles.recentlyDeleted} onPress={() => navigation.navigate('RecentlyDeletedScreen')}>
-                <FontAwesomeIcon style={appStyles.recentlyDeletedIcon} size={20} icon={faTrash} />
-              </TouchableOpacity>
-            )}
+            <Text style={appStyles.heading}>Recently deleted</Text>
           </View>
 
           <TextInput
             style={searchStyles.input}
-            onChangeText={(text) => updateSearchResults(text.toLowerCase())}
             placeholder="Search..."
             placeholderTextColor={Colors.$n6}
           />
         </View>
 
         <FlatList
-          data={sortListByDate(list)}
+          data={list}
           renderItem={({ item }) => (
             <Swipeable
               renderRightActions={() => (
@@ -72,7 +47,6 @@ function DemoCollectionScreen() {
             >
               <TouchableOpacity
                 style={listStyles.item}
-                onPress={() => navigation.navigate('DemoScreen', { item })}
               >
                 <View style={listStyles.itemPrimaryColumn}>
                   <TextInput
@@ -97,4 +71,4 @@ function DemoCollectionScreen() {
   );
 }
 
-export default DemoCollectionScreen;
+export default RecentlyDeletedScreen;
