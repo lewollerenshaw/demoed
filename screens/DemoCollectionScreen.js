@@ -12,31 +12,25 @@ import listStyles from '../styles/list';
 import appStyles from '../styles/app';
 import searchStyles from '../styles/search';
 import { Colors } from '../styles/colors';
-import { SampleData } from '../data';
 import { sortListByDate, formatDate } from '../utils/helpers';
 
 function DemoCollectionScreen() {
+  const demos = useSelector((state) => state.demos);
   const navigation = useNavigation();
   const dispatch = useDispatch();
   const [list, setList] = React.useState([]);
-  const demos = useSelector((state) => state.demos);
 
   const STORAGE_KEY = 'demos: demo';
 
-  // When recording gets added to current demo
-  // Get demo from redux with newely added recordings
   React.useEffect(() => {
     setList(demos);
   }, [demos]);
 
   const fetchDataAndSetInRedux = async () => {
-    // 1. Get current data in async storage
     const storageData = JSON.parse(await AsyncStorage.getItem(STORAGE_KEY));
-    // 2. If data exists, store in redux
-    if (storageData !== null) await dispatch(getDemos(storageData));
+    if (storageData !== null) dispatch(getDemos(storageData));
   };
 
-  // On screen load, get from local storage and store in redux
   React.useEffect(() => {
     fetchDataAndSetInRedux();
   }, []);
@@ -52,9 +46,7 @@ function DemoCollectionScreen() {
       });
 
       setList(filter);
-    } else {
-      setList(demos);
-    }
+    } else setList(demos);
   };
 
   return (

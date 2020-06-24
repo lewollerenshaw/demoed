@@ -48,6 +48,7 @@ function record() {
       interruptionModeAndroid: Audio.INTERRUPTION_MODE_ANDROID_DO_NOT_MIX,
       playThroughEarpieceAndroid: false,
     });
+
     await recordingInstance.prepareToRecordAsync(
       Audio.RECORDING_OPTIONS_PRESET_HIGH_QUALITY,
     );
@@ -56,54 +57,57 @@ function record() {
   };
 
   const moveRecordingToNewFolder = async () => {
-    const folder = await `${FileSystem.documentDirectory}recordings/`;
-    await FileSystem.makeDirectoryAsync(folder, { intermediates: true });
-
+    const folder = `${FileSystem.documentDirectory}recordings/`;
     const URI = await recordingInstance.getURI();
     const recordingName = URI.substring(URI.lastIndexOf('/') + 1);
+
+    await FileSystem.makeDirectoryAsync(folder, { intermediates: true });
+
     await FileSystem.moveAsync({
       from: URI,
       to: folder + recordingName,
     });
+
     return folder + recordingName;
   };
 
   const storeRecording = async (URI, response) => {
-    const recording = new Recording('Recording Title', response.durationMillis, ['Tag1, Tag2'], URI, new Date(2013, 3, 25, 10, 33, 30));
+    const recording = new Recording(
+      // TODO: Get title on user input : provide generated title
+      'Recording Title',
+      response.durationMillis,
+      // TODO: Get tags (optional)
+      ['Tag1, Tag2'],
+      URI,
+      new Date(),
+    );
 
-    // If currently on Your Collection screen
     if (currentScreen === 'DemoCollectionScreen') {
-      const demo = new Demo('123', 'Demo Title', [recording], new Date(2013, 3, 25, 10, 33, 30));
+      const demo = new Demo(
+        '123',
+        'Demo Title',
+        [recording],
+        new Date(),
+      );
 
-      // Store in redux
-      await dispatch(addDemo(demo));
+      dispatch(addDemo(demo));
 
-      // Store in async storage
-      // 1. Get current data in async storage
       const storageData = JSON.parse(await AsyncStorage.getItem(STORAGE_KEY));
-      // 2. Check if async storage is not empty
+
       if (storageData !== null) {
         storageData.push(demo);
         await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(storageData));
       } else await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify([demo]));
     } else {
-      // If on Demo Screen
+      dispatch(addRecording(recording, currentDemoId));
 
-      // Store in existing demo in redux
-      await dispatch(addRecording(recording, currentDemoId));
+      const storageData = JSON.parse(await AsyncStorage.getItem(STORAGE_KEY));
 
-      // Store in existing demo in async storage
-      // 1. Get current data in async storage
-      const storageData = await AsyncStorage.getItem(STORAGE_KEY);
-      const storageDataJSON = JSON.parse(storageData);
-
-      // 2. Get current demo and push new recording
-      storageDataJSON.forEach((demo) => {
+      storageData.forEach((demo) => {
         if (demo.id.includes(currentDemoId)) demo.recordings.push(recording);
       });
 
-      // 3. Set in async storage
-      await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(storageDataJSON));
+      await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(storageData));
     }
   };
 

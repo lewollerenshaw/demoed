@@ -5,15 +5,15 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faCompactDisc, faTrash } from '@fortawesome/free-solid-svg-icons';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
+import { useSelector } from 'react-redux';
 import listStyles from '../styles/list';
 import appStyles from '../styles/app';
 import searchStyles from '../styles/search';
 import { Colors } from '../styles/colors';
 import { formatDate } from '../utils/helpers';
-import { SampleData } from '../data';
 
 function RecentlyDeletedScreen() {
-  const list = SampleData;
+  const deletedItems = useSelector((state) => state.bin);
 
   return (
     <View style={appStyles.container}>
@@ -31,7 +31,7 @@ function RecentlyDeletedScreen() {
         </View>
 
         <FlatList
-          data={list}
+          data={deletedItems}
           renderItem={({ item }) => (
             <Swipeable
               renderRightActions={() => (
