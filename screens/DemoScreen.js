@@ -1,12 +1,12 @@
 import * as React from 'react';
 import {
-  Text, View, FlatList, TouchableOpacity, TextInput,
+  Text, View, FlatList, RectButton, TouchableOpacity, TextInput, AsyncStorage,
 } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
-import { addRecording } from '../redux/actions/binActions';
+import { addRecordingToBin } from '../redux/actions/binActions';
 import { deleteRecording } from '../redux/actions/demoActions';
 import { setCurrentDemoId } from '../redux/actions/globalActions';
 import appStyles from '../styles/app';
@@ -24,6 +24,9 @@ function DemoScreen(_demo) {
   const demos = useSelector((state) => state.demos);
   const dispatch = useDispatch();
 
+  const STORAGE_KEY = 'demos: demo';
+  const BIN_STORAGE_KEY = 'bin: binItem';
+
   React.useEffect(() => {
     dispatch(setCurrentDemoId(demo.id));
   }, []);
@@ -31,7 +34,12 @@ function DemoScreen(_demo) {
   // When recording gets added to current demo
   // Get demo from redux with newely added recordings
   React.useEffect(() => {
-    setList(demos[0].recordings);
+    console.log("Use effect")
+    console.log("demos[0].recordings", demos[0].recordings);
+    if (typeof demos[0].recordings !== "undefined") {
+      console.log("FUCK OFF")
+      setList(demos[0].recordings)
+    };
   }, [demos]);
 
   const updateSearchResults = (search) => {
@@ -49,21 +57,36 @@ function DemoScreen(_demo) {
     } else setList(demos);
   };
 
-  const deleteItem = (recording) => {
-    const filteredRecordings = demo.recordings.filter((item) => item.id !== recording.id);
-    demo.recordings = filteredRecordings;
-
+  const deleteItem = async (recording) => {
     const del = new DeletedRecording(
       Date.now(),
       demo.id,
       recording,
     );
+    // Remove from async storage
+    const demoStorageData = JSON.parse(await AsyncStorage.getItem(STORAGE_KEY));
+    let updatedData;
+    demoStorageData.forEach((demoInStorage) => {
+      updatedData = demoInStorage.recordings.filter((recordingInStorage) => {
+        recordingInStorage.id !== recording.id;
+      });
+    });
+    demoStorageData[0].recordings = updatedData;
+    await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(demoStorageData));
 
-    dispatch(deleteRecording(demo));
-    dispatch(addRecording(del));
+    // Add to async storage bin
+    const storageData = JSON.parse(await AsyncStorage.getItem(BIN_STORAGE_KEY));
 
-    console.log(demos)
-    console.log(useSelector((state) => state.bin));
+    if (storageData !== null) {
+      storageData.push(del);
+      await AsyncStorage.setItem(BIN_STORAGE_KEY, JSON.stringify(storageData));
+    } else await AsyncStorage.setItem(BIN_STORAGE_KEY, JSON.stringify([del]));
+
+    // Remove from redux
+    dispatch(deleteRecording(_demo.route.params.item, recording));
+
+    // Add to bin
+    dispatch(addRecordingToBin(del));
   };
 
   return (

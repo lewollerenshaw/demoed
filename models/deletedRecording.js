@@ -5,5 +5,5 @@ export default function DeletedRecording(dateDeleted, associatedDemo, recording)
   deletedRecording.associatedDemo = associatedDemo || null;
   deletedRecording.recording = recording || null;
 
-  return recording;
+  return deletedRecording;
 }

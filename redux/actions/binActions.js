@@ -1,14 +1,14 @@
-export const ADD_DEMO = 'ADD_DEMO';
-export const ADD_RECORDING = 'ADD_RECORDING';
+export const ADD_DEMO_TO_BIN = 'ADD_DEMO_TO_BIN';
+export const ADD_RECORDING_TO_BIN = 'ADD_RECORDING_TO_BIN';
 export const DELETE_ALL = 'DELETE_ALL';
 export const RESTORE = 'RESTORE';
 
-export function addDemo(demo) {
-  return { type: ADD_DEMO, demo };
+export function addDemoToBin(demo) {
+  return { type: ADD_DEMO_TO_BIN, demo };
 }
 
-export function addRecording(recording) {
-  return { type: ADD_RECORDING, recording };
+export function addRecordingToBin(recording) {
+  return { type: ADD_RECORDING_TO_BIN, recording };
 }
 
 export function deleteAll() {

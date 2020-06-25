@@ -34,6 +34,7 @@ function RecentlyDeletedScreen() {
         <FlatList
           data={deletedItems}
           renderItem={({ item }) => (
+
             <Swipeable
               renderRightActions={() => (
                 <TouchableOpacity
@@ -53,14 +54,14 @@ function RecentlyDeletedScreen() {
                   <TextInput
                     style={listStyles.itemHeader}
                   >
-                    {item.title}
+                    {item.demo.title}
                   </TextInput>
-                  <Text style={listStyles.itemDate}>{formatDate(item.dateCreated)}</Text>
+                  <Text style={listStyles.itemDate}>{formatDate(item.demo.dateCreated)}</Text>
                 </View>
 
                 <View style={listStyles.itemSecondaryColumn}>
                   <FontAwesomeIcon style={listStyles.itemIcon} icon={faCompactDisc} />
-                  <Text style={listStyles.itemRecordingCount}>{item.recordings.length}</Text>
+                  <Text style={listStyles.itemRecordingCount}>{item.demo.recordings.length}</Text>
                 </View>
               </TouchableOpacity>
             </Swipeable>

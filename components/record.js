@@ -261,25 +261,6 @@ function record() {
         justifyContent: 'center',
       }}
       >
-        <TouchableWithoutFeedback onPress={() => checkRecordingsInDirectory()}>
-          <Text style={{
-            alignSelf: 'center',
-          }}
-          >
-            Check recordings in directory
-          </Text>
-        </TouchableWithoutFeedback>
-      </View>
-
-      <View style={{
-        width: '100%',
-        height: 40,
-        border: 'solid',
-        borderWidth: 1,
-        borderColor: 'black',
-        justifyContent: 'center',
-      }}
-      >
         <TouchableWithoutFeedback onPress={() => console.log(bin)}>
           <Text style={{
             alignSelf: 'center',
