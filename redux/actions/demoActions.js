@@ -26,8 +26,8 @@ export function addRecording(recording, currentDemoId) {
   return { type: ADD_RECORDING, recording, currentDemoId };
 }
 
-export function deleteRecording(recording) {
-  return { type: DELETE_RECORDING, recording };
+export function deleteRecording(demo, recording) {
+  return { type: DELETE_RECORDING, demo, recording };
 }
 
 export function updateRecording(recording) {
