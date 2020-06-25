@@ -5,7 +5,7 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faCompactDisc, faTrash } from '@fortawesome/free-solid-svg-icons';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import listStyles from '../styles/list';
 import appStyles from '../styles/app';
 import searchStyles from '../styles/search';
@@ -14,6 +14,7 @@ import { formatDate } from '../utils/helpers';
 
 function RecentlyDeletedScreen() {
   const deletedItems = useSelector((state) => state.bin);
+  const dispatch = useDispatch();
 
   return (
     <View style={appStyles.container}>

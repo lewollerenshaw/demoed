@@ -8,6 +8,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { addDemo, addRecording } from '../redux/actions/demoActions';
 import Demo from '../models/demo';
 import Recording from '../models/recording';
+import { idGenerator } from '../utils/helpers';
 
 function record() {
   const [permissions, setPermissions] = React.useState();
@@ -15,6 +16,7 @@ function record() {
   const [recordingInstance, setRecordingInstance] = React.useState(null);
   const currentScreen = useSelector((state) => state.global.currentScreen);
   const currentDemoId = useSelector((state) => state.global.currentDemoId);
+  const bin = useSelector((state) => state.bin);
   const demos = useSelector((state) => state.demos);
   const dispatch = useDispatch();
 
@@ -73,10 +75,9 @@ function record() {
 
   const storeRecording = async (URI, response) => {
     const recording = new Recording(
-      // TODO: Get title on user input : provide generated title
+      idGenerator(),
       'Recording Title',
       response.durationMillis,
-      // TODO: Get tags (optional)
       ['Tag1, Tag2'],
       URI,
       new Date(),
@@ -84,7 +85,7 @@ function record() {
 
     if (currentScreen === 'DemoCollectionScreen') {
       const demo = new Demo(
-        '123',
+        idGenerator(),
         'Demo Title',
         [recording],
         new Date(),
@@ -251,6 +252,43 @@ function record() {
         </TouchableWithoutFeedback>
       </View>
 
+      <View style={{
+        width: '100%',
+        height: 40,
+        border: 'solid',
+        borderWidth: 1,
+        borderColor: 'black',
+        justifyContent: 'center',
+      }}
+      >
+        <TouchableWithoutFeedback onPress={() => checkRecordingsInDirectory()}>
+          <Text style={{
+            alignSelf: 'center',
+          }}
+          >
+            Check recordings in directory
+          </Text>
+        </TouchableWithoutFeedback>
+      </View>
+
+      <View style={{
+        width: '100%',
+        height: 40,
+        border: 'solid',
+        borderWidth: 1,
+        borderColor: 'black',
+        justifyContent: 'center',
+      }}
+      >
+        <TouchableWithoutFeedback onPress={() => console.log(bin)}>
+          <Text style={{
+            alignSelf: 'center',
+          }}
+          >
+            Check bin in directory
+          </Text>
+        </TouchableWithoutFeedback>
+      </View>
       <View style={{
         width: '100%',
         height: 40,

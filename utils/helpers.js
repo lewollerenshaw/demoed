@@ -31,9 +31,12 @@ const hasSearchTextInTags = (search, tags) => {
   return result;
 };
 
+const idGenerator = () => String.fromCharCode(65 + Math.floor(Math.random() * 26)) + Date.now();
+
 module.exports = {
   tagStringBuilder,
   sortListByDate,
   formatDate,
   hasSearchTextInTags,
+  idGenerator,
 };
