@@ -3,10 +3,10 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { Provider, useDispatch } from 'react-redux';
 import { createStore } from 'redux';
-import configureStore from './redux/configureStore';
 import { setCurrentScreen } from './redux/actions/globalActions';
 import DemoScreen from './screens/DemoScreen';
 import DemoCollectionScreen from './screens/DemoCollectionScreen';
+import RecentlyDeletedScreen from './screens/RecentlyDeletedScreen';
 import Record from './components/record';
 
 import rootReducer from './redux/reducers/rootReducer';
@@ -56,6 +56,7 @@ function App() {
       >
         <Stack.Screen name="DemoCollectionScreen" component={DemoCollectionScreen} />
         <Stack.Screen name="DemoScreen" component={DemoScreen} />
+        <Stack.Screen name="RecentlyDeletedScreen" component={RecentlyDeletedScreen} />
       </Stack.Navigator>
       <Record />
     </NavigationContainer>

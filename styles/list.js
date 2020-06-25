@@ -33,6 +33,7 @@ const listStyles = StyleSheet.create({
     alignItems: 'center',
   },
   deleteButtonIcon: { color: Colors.$lightShade },
+
   /* Demo Collection Screen Specific */
   itemDate: {
     opacity: 0.6,

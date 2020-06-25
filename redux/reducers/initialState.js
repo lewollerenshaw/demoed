@@ -1,9 +1,6 @@
 export default {
   demos: [],
-  bin: {
-    deletedDemos: [],
-    deletedRecordings: [],
-  },
+  bin: [],
   global: {
     darkMode: false,
     currentScreen: 'DemoCollectionScreen',

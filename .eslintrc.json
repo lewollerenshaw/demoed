@@ -19,6 +19,8 @@
     ],
     "rules": {
         "react/jsx-filename-extension": [0],
-        "linebreak-style": 0
+        "linebreak-style": 0,
+        "no-unused-expressions": "off",
+        "max-len": "off"
     }
 }

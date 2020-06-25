@@ -11,6 +11,7 @@ export default function binReducer(state = initialState.bin, action) {
     case ADD_DEMO:
       return { ...state };
     case ADD_RECORDING:
+      state.push(action.recording);
       return { ...state };
     case DELETE_ALL:
       return { ...state };
