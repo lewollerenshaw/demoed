@@ -7,6 +7,7 @@ import {
   ADD_RECORDING,
   DELETE_RECORDING,
   UPDATE_RECORDING,
+  SET_DEMOS,
 } from '../actions/demoActions';
 
 export default function demoReducer(state = initialState.demos, action) {
@@ -15,11 +16,11 @@ export default function demoReducer(state = initialState.demos, action) {
       state.push(action.demo);
       return [...state];
     case GET_DEMOS:
-      state.push(action.demos[0]);
+      return [...state];
+    case SET_DEMOS:
       return [...state];
     case DELETE_DEMO:
-      state = state.filter((demo) => demo.id !== action.demo.id);
-      return [...state];
+      return state.filter((demo) => demo.id !== action.demo.id);
     case UPDATE_DEMO:
       return [...state];
     case ADD_RECORDING:

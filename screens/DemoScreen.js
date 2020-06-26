@@ -1,6 +1,6 @@
 import * as React from 'react';
 import {
-  Text, View, FlatList, RectButton, TouchableOpacity, TextInput, AsyncStorage,
+  Text, View, FlatList, TouchableOpacity, TextInput, AsyncStorage,
 } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
@@ -17,15 +17,13 @@ import {
   tagStringBuilder, formatDate, sortListByDate, hasSearchTextInTags,
 } from '../utils/helpers';
 import DeletedRecording from '../models/deletedRecording';
+import { STORAGE_KEY, BIN_STORAGE_KEY } from '../redux/storageKeys';
 
 function DemoScreen(_demo) {
   const demo = _demo.route.params.item;
   const [list, setList] = React.useState([]);
   const demos = useSelector((state) => state.demos);
   const dispatch = useDispatch();
-
-  const STORAGE_KEY = 'demos: demo';
-  const BIN_STORAGE_KEY = 'bin: binItem';
 
   React.useEffect(() => {
     dispatch(setCurrentDemoId(demo.id));
@@ -34,12 +32,9 @@ function DemoScreen(_demo) {
   // When recording gets added to current demo
   // Get demo from redux with newely added recordings
   React.useEffect(() => {
-    console.log("Use effect")
-    console.log("demos[0].recordings", demos[0].recordings);
-    if (typeof demos[0].recordings !== "undefined") {
-      console.log("FUCK OFF")
-      setList(demos[0].recordings)
-    };
+    if (typeof demos[0].recordings !== 'undefined') {
+      setList(demos[0].recordings);
+    }
   }, [demos]);
 
   const updateSearchResults = (search) => {

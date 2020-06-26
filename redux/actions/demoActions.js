@@ -5,6 +5,7 @@ export const UPDATE_DEMO = 'UPDATE_DEMO';
 export const ADD_RECORDING = 'ADD_RECORDING';
 export const DELETE_RECORDING = 'DELETE_RECORDING';
 export const UPDATE_RECORDING = 'UPDATE_RECORDING';
+export const SET_DEMOS = 'SET_DEMOS';
 
 export function addDemo(demo) {
   return { type: ADD_DEMO, demo };
@@ -12,6 +13,10 @@ export function addDemo(demo) {
 
 export function getDemos(demos) {
   return { type: GET_DEMOS, demos };
+}
+
+export function setDemos(demos) {
+  return { type: SET_DEMOS, demos };
 }
 
 export function deleteDemo(demo) {
