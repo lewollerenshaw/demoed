@@ -49,16 +49,14 @@ function DemoCollectionScreen() {
 
     await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(updatedDemoStorage));
 
-    // Add to async storage bin
+    // Update local bin storage
     let binStorage = JSON.parse(await AsyncStorage.getItem(BIN_STORAGE_KEY));
     binStorage !== null ? binStorage.push(del) : binStorage = [del];
 
     await AsyncStorage.setItem(BIN_STORAGE_KEY, JSON.stringify(binStorage));
 
-    // Add to bin
+    // Update redux
     dispatch(addDemoToBin(del));
-
-    // Remove from demo store
     dispatch(deleteDemo(demo));
   };
 
