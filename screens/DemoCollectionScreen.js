@@ -44,13 +44,8 @@ function DemoCollectionScreen() {
     );
 
     // Remove from local demo storage
-    const updatedDemoStorage = JSON.parse(await AsyncStorage.getItem(STORAGE_KEY));
-    console.log("DEMOS IN STORAGE");
-    console.log(updatedDemoStorage);
-
-    console.log("FILTERED DEMOS");
-    console.log(updatedDemoStorage.filter((demoInStorage) => demoInStorage.id !== demo.id));
-
+    const updatedDemoStorage = JSON.parse(await AsyncStorage.getItem(STORAGE_KEY))
+      .filter((demoInStorage) => demoInStorage.id !== demo.id);
 
     await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(updatedDemoStorage));
 
