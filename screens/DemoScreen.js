@@ -7,7 +7,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import { addRecordingToBin } from '../redux/actions/binActions';
-import { updateDemo, setDemos } from '../redux/actions/demoActions';
+import { updateDemo } from '../redux/actions/demoActions';
 import { setCurrentDemoId } from '../redux/actions/globalActions';
 import appStyles from '../styles/app';
 import listStyles from '../styles/list';
