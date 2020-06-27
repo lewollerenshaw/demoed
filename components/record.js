@@ -8,7 +8,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { addDemo, addRecording } from '../redux/actions/demoActions';
 import Demo from '../models/demo';
 import Recording from '../models/recording';
-import { idGenerator, getDemoTitle } from '../utils/helpers';
+import { idGenerator } from '../utils/helpers';
 
 function record() {
   const [permissions, setPermissions] = React.useState();
