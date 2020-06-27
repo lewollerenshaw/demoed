@@ -1,6 +1,6 @@
 import * as React from 'react';
 import {
-  Text, View, FlatList, TouchableOpacity, TextInput, AsyncStorage,
+  Text, View, FlatList, TouchableOpacity, TextInput, AsyncStorage, Modal,
 } from 'react-native';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faCompactDisc, faTrash, faFolder } from '@fortawesome/free-solid-svg-icons';
@@ -12,10 +12,11 @@ import searchStyles from '../styles/search';
 import { Colors } from '../styles/colors';
 import { formatDate } from '../utils/helpers';
 import { BIN_STORAGE_KEY } from '../redux/storageKeys';
-import { deleteItemFromBin } from '../redux/actions/binActions';
+import { deleteItemFromBin, deleteAll } from '../redux/actions/binActions';
 
 function RecentlyDeletedScreen() {
   const [deletedItems, setDeletedItems] = React.useState(useSelector((state) => state.bin));
+  const [isModalVisible, setModalVisible] = React.useState(false);
   const demos = useSelector((state) => state.demos);
   const dispatch = useDispatch();
 
@@ -39,12 +40,29 @@ function RecentlyDeletedScreen() {
     setDeletedItems(updatedBin);
   };
 
+  const deleteAllItems = async () => {
+    // Remove from local bin storage
+    const updatedBin = [];
+    await AsyncStorage.setItem(BIN_STORAGE_KEY, JSON.stringify(updatedBin));
+
+    // Update redux
+    dispatch(deleteAll());
+    setDeletedItems([]);
+    setModalVisible(false);
+  };
+
   return (
     <View style={appStyles.container}>
       <View style={appStyles.body}>
         <View style={appStyles.headerContainer}>
           <View style={appStyles.headingRow}>
             <Text style={appStyles.heading}>Recently deleted</Text>
+            <TouchableOpacity
+              style={appStyles.headerInteraction}
+              onPress={() => setModalVisible(true)}
+            >
+              <Text style={appStyles.headingInteractionText}>Delete all</Text>
+            </TouchableOpacity>
           </View>
 
           <TextInput
@@ -91,7 +109,7 @@ function RecentlyDeletedScreen() {
                     </View>
 
                     <View style={listStyles.itemSecondaryColumn}>
-                      <FontAwesomeIcon style={listStyles.itemIcon} icon={faCompactDisc} />
+                      <Text style={listStyles.itemRecordingDuration}>{item.recording.duration}</Text>
                     </View>
                   </TouchableOpacity>
                 )}
@@ -112,7 +130,8 @@ function RecentlyDeletedScreen() {
                     </View>
 
                     <View style={listStyles.itemSecondaryColumn}>
-                      <FontAwesomeIcon style={listStyles.itemIcon} icon={faFolder} />
+                      <FontAwesomeIcon style={listStyles.itemIcon} icon={faCompactDisc} />
+                      <Text style={listStyles.itemRecordingCount}>{item.demo.recordings.length}</Text>
                     </View>
                   </TouchableOpacity>
                 )}
@@ -122,6 +141,25 @@ function RecentlyDeletedScreen() {
           keyExtractor={(_item, index) => index.toString()}
         />
       </View>
+
+      {/* DELETE ALL MODAL */}
+      <Modal
+        visible={isModalVisible}
+        transparent={false}
+      >
+        <View style={{ justifyContent: 'center', alignContent: 'center' }}>
+          <Text>
+            Are you sure you want to delete all?
+          </Text>
+
+          <TouchableOpacity onPress={() => deleteAllItems(false)}>
+            <Text>
+              Confirm
+            </Text>
+          </TouchableOpacity>
+
+        </View>
+      </Modal>
     </View>
   );
 }
