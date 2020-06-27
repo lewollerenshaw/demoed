@@ -1,13 +1,13 @@
 import * as React from 'react';
 import { useNavigation } from '@react-navigation/native';
 import {
-  Text, View, FlatList, TouchableWithoutFeedback, TouchableOpacity, TextInput, AsyncStorage,
+  Text, View, FlatList, TouchableOpacity, TextInput, AsyncStorage,
 } from 'react-native';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faCompactDisc, faTrash } from '@fortawesome/free-solid-svg-icons';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import { useSelector, useDispatch } from 'react-redux';
-import { getDemos, deleteDemo } from '../redux/actions/demoActions';
+import { setDemos, deleteDemo } from '../redux/actions/demoActions';
 import { addDemoToBin } from '../redux/actions/binActions';
 import listStyles from '../styles/list';
 import appStyles from '../styles/app';
@@ -15,28 +15,13 @@ import searchStyles from '../styles/search';
 import { Colors } from '../styles/colors';
 import { sortListByDate, formatDate } from '../utils/helpers';
 import DeletedDemo from '../models/deletedDemo';
+import { STORAGE_KEY, BIN_STORAGE_KEY } from '../redux/storageKeys';
 
 function DemoCollectionScreen() {
   const demos = useSelector((state) => state.demos);
   const navigation = useNavigation();
   const dispatch = useDispatch();
   const [list, setList] = React.useState([]);
-
-  const STORAGE_KEY = 'demos: demo';
-  const BIN_STORAGE_KEY = 'bin: binItem';
-
-  React.useEffect(() => {
-    setList(demos);
-  }, [demos]);
-
-  const fetchDataAndSetInRedux = async () => {
-    const storageData = JSON.parse(await AsyncStorage.getItem(STORAGE_KEY));
-    if (storageData !== null && storageData.length !== 0) dispatch(getDemos(storageData));
-  };
-
-  React.useEffect(() => {
-    fetchDataAndSetInRedux();
-  }, []);
 
   const updateSearchResults = (search) => {
     const filter = [];
@@ -57,25 +42,35 @@ function DemoCollectionScreen() {
       Date.now(),
       demo,
     );
-    // Remove from async storage
-    const demoStorageData = JSON.parse(await AsyncStorage.getItem(STORAGE_KEY));
-    const updatedData = demoStorageData.filter((demoInStorage) => demoInStorage.id !== demo.id);
-    await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(updatedData));
 
-    // Add to async storage bin
-    const storageData = JSON.parse(await AsyncStorage.getItem(BIN_STORAGE_KEY));
+    // Remove from local demo storage
+    const updatedDemoStorage = JSON.parse(await AsyncStorage.getItem(STORAGE_KEY))
+      .filter((demoInStorage) => demoInStorage.id !== demo.id);
 
-    if (storageData !== null) {
-      storageData.push(del);
-      await AsyncStorage.setItem(BIN_STORAGE_KEY, JSON.stringify(storageData));
-    } else await AsyncStorage.setItem(BIN_STORAGE_KEY, JSON.stringify([del]));
+    await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(updatedDemoStorage));
 
-    // Remove from redux
-    dispatch(deleteDemo(demo));
+    // Update local bin storage
+    let binStorage = JSON.parse(await AsyncStorage.getItem(BIN_STORAGE_KEY));
+    binStorage !== null ? binStorage.push(del) : binStorage = [del];
 
-    // Add to bin
+    await AsyncStorage.setItem(BIN_STORAGE_KEY, JSON.stringify(binStorage));
+
+    // Update redux
     dispatch(addDemoToBin(del));
+    dispatch(deleteDemo(demo));
   };
+
+  const fetchDataAndSetInRedux = async () => {
+    const storageDemos = JSON.parse(await AsyncStorage.getItem(STORAGE_KEY));
+
+    if (storageDemos) dispatch(setDemos(storageDemos));
+  };
+
+  React.useEffect(() => {
+    fetchDataAndSetInRedux();
+  }, []);
+
+  React.useEffect(() => (demos ? setList(demos) : setList([])), [demos]);
 
   return (
     <View style={appStyles.container}>
