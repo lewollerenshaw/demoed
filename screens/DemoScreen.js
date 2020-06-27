@@ -7,7 +7,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import { addRecordingToBin } from '../redux/actions/binActions';
-import { updateDemo } from '../redux/actions/demoActions';
+import { updateDemo, setDemos } from '../redux/actions/demoActions';
 import { setCurrentDemoId } from '../redux/actions/globalActions';
 import appStyles from '../styles/app';
 import listStyles from '../styles/list';
@@ -20,8 +20,8 @@ import DeletedRecording from '../models/deletedRecording';
 import { STORAGE_KEY, BIN_STORAGE_KEY } from '../redux/storageKeys';
 
 function DemoScreen(_demo) {
-  const demo = _demo.route.params.item;
-  const [list, setList] = React.useState([]);
+  const [demo, setDemo] = React.useState(_demo.route.params.item);
+  const [list, setList] = React.useState(demo.recordings);
   const dispatch = useDispatch();
 
   const updateSearchResults = (search) => {
@@ -47,12 +47,15 @@ function DemoScreen(_demo) {
     );
 
     // Remove recording from demo object
-    demo.recordings = demo.recordings.filter((rec) => rec.id !== recording.id);
+    const updatedDemo = demo;
+    updatedDemo.recordings = updatedDemo.recordings.filter((rec) => rec.id !== recording.id);
+    setDemo(updatedDemo);
 
     // Update demo object in local storage
     const updatedDemoStorage = JSON.parse(await AsyncStorage.getItem(STORAGE_KEY))
-      .filter((dem) => dem.id !== demo.id)
-      .push(demo);
+      .filter((dem) => dem.id !== demo.id);
+
+    updatedDemoStorage.push(demo);
 
     await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(updatedDemoStorage));
 
@@ -66,13 +69,12 @@ function DemoScreen(_demo) {
     // Update redux
     dispatch(updateDemo(demo));
     dispatch(addRecordingToBin(del));
+    setList(demo.recordings);
   };
 
   React.useEffect(() => {
     dispatch(setCurrentDemoId(demo.id));
   }, []);
-
-  React.useEffect(() => (demo.recordings ? setList(demo.recordings) : setList([])), [demo]);
 
   return (
     <View style={appStyles.container}>
