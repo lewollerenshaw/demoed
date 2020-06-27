@@ -2,12 +2,12 @@ import * as React from 'react';
 import {
   Text, View, FlatList, TouchableOpacity, TextInput, AsyncStorage,
 } from 'react-native';
-import { useSelector, useDispatch } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import { addRecordingToBin } from '../redux/actions/binActions';
-import { deleteRecording } from '../redux/actions/demoActions';
+import { updateDemo } from '../redux/actions/demoActions';
 import { setCurrentDemoId } from '../redux/actions/globalActions';
 import appStyles from '../styles/app';
 import listStyles from '../styles/list';
@@ -22,20 +22,7 @@ import { STORAGE_KEY, BIN_STORAGE_KEY } from '../redux/storageKeys';
 function DemoScreen(_demo) {
   const demo = _demo.route.params.item;
   const [list, setList] = React.useState([]);
-  const demos = useSelector((state) => state.demos);
   const dispatch = useDispatch();
-
-  React.useEffect(() => {
-    dispatch(setCurrentDemoId(demo.id));
-  }, []);
-
-  // When recording gets added to current demo
-  // Get demo from redux with newely added recordings
-  React.useEffect(() => {
-    if (typeof demos[0].recordings !== 'undefined') {
-      setList(demos[0].recordings);
-    }
-  }, [demos]);
 
   const updateSearchResults = (search) => {
     const filter = [];
@@ -49,7 +36,7 @@ function DemoScreen(_demo) {
       });
 
       setList(filter);
-    } else setList(demos);
+    } else setList(list);
   };
 
   const deleteItem = async (recording) => {
@@ -58,31 +45,34 @@ function DemoScreen(_demo) {
       demo.id,
       recording,
     );
-    // Remove from async storage
-    const demoStorageData = JSON.parse(await AsyncStorage.getItem(STORAGE_KEY));
-    let updatedData;
-    demoStorageData.forEach((demoInStorage) => {
-      updatedData = demoInStorage.recordings.filter((recordingInStorage) => {
-        recordingInStorage.id !== recording.id;
-      });
-    });
-    demoStorageData[0].recordings = updatedData;
-    await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(demoStorageData));
 
-    // Add to async storage bin
-    const storageData = JSON.parse(await AsyncStorage.getItem(BIN_STORAGE_KEY));
+    // Remove recording from demo object
+    demo.recordings = demo.recordings.filter((rec) => rec.id !== recording.id);
 
-    if (storageData !== null) {
-      storageData.push(del);
-      await AsyncStorage.setItem(BIN_STORAGE_KEY, JSON.stringify(storageData));
-    } else await AsyncStorage.setItem(BIN_STORAGE_KEY, JSON.stringify([del]));
+    // Update demo object in local storage
+    const updatedDemoStorage = JSON.parse(await AsyncStorage.getItem(STORAGE_KEY))
+      .filter((dem) => dem.id !== demo.id)
+      .push(demo);
 
-    // Remove from redux
-    dispatch(deleteRecording(_demo.route.params.item, recording));
+    await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(updatedDemoStorage));
 
-    // Add to bin
+    // Update local bin storage
+    let binStorage = JSON.parse(await AsyncStorage.getItem(BIN_STORAGE_KEY));
+
+    binStorage !== null ? binStorage.push(del) : binStorage = [del];
+
+    await AsyncStorage.setItem(BIN_STORAGE_KEY, JSON.stringify(binStorage));
+
+    // Update redux
+    dispatch(updateDemo(demo));
     dispatch(addRecordingToBin(del));
   };
+
+  React.useEffect(() => {
+    dispatch(setCurrentDemoId(demo.id));
+  }, []);
+
+  React.useEffect(() => (demo.recordings ? setList(demo.recordings) : setList([])), [demo]);
 
   return (
     <View style={appStyles.container}>

@@ -19,27 +19,17 @@ export default function demoReducer(state = initialState.demos, action) {
     case DELETE_DEMO:
       return state.filter((demo) => demo.id !== action.demo.id);
     case UPDATE_DEMO:
-      return [...state];
+      return state.map((item) => {
+        if (item.id === action.demo.id) return action.demo;
+
+        return item;
+      });
     case ADD_RECORDING:
       state.forEach((demo) => {
         if (demo.id.includes(action.currentDemoId)) demo.recordings.push(action.recording);
       });
       return [...state];
     case DELETE_RECORDING:
-      let updatedDemo;
-
-      state.forEach((demo) => {
-        if (demo.id === action.demo.id) {
-          updatedDemo = demo.recordings.filter((recording) => {
-            recording.id !== action.recording.id;
-          });
-        }
-      });
-      for (let i = 0; i < state.length; i++) {
-        if (state[i].id === action.demo.id) {
-          state[i].recordings = updatedDemo;
-        }
-      }
       return [...state];
     case UPDATE_RECORDING:
       return [...state];

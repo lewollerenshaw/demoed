@@ -70,9 +70,7 @@ function DemoCollectionScreen() {
     fetchDataAndSetInRedux();
   }, []);
 
-  React.useEffect(() => {
-    setList(demos);
-  }, [demos]);
+  React.useEffect(() => (demos ? setList(demos) : setList([])), [demos]);
 
   return (
     <View style={appStyles.container}>
