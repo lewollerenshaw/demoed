@@ -8,7 +8,7 @@ import { faCompactDisc, faTrash } from '@fortawesome/free-solid-svg-icons';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import { useSelector, useDispatch } from 'react-redux';
 import { setDemos, deleteDemo } from '../redux/actions/demoActions';
-import { addDemoToBin } from '../redux/actions/binActions';
+import { addDemoToBin, setBin } from '../redux/actions/binActions';
 import listStyles from '../styles/list';
 import appStyles from '../styles/app';
 import searchStyles from '../styles/search';
@@ -62,8 +62,12 @@ function DemoCollectionScreen() {
 
   const fetchDataAndSetInRedux = async () => {
     const storageDemos = JSON.parse(await AsyncStorage.getItem(STORAGE_KEY));
+    const storageBin = JSON.parse(await AsyncStorage.getItem(BIN_STORAGE_KEY));
+
+    console.log(storageBin)
 
     if (storageDemos) dispatch(setDemos(storageDemos));
+    if (storageBin) dispatch(setBin(storageBin));
   };
 
   React.useEffect(() => {
