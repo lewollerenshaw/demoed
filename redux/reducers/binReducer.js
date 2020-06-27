@@ -5,6 +5,7 @@ import {
   DELETE_ALL,
   RESTORE,
   SET_BIN,
+  DELETE_ITEM_FROM_BIN,
 } from '../actions/binActions';
 
 export default function binReducer(state = initialState.bin, action) {
@@ -17,6 +18,8 @@ export default function binReducer(state = initialState.bin, action) {
     case ADD_RECORDING_TO_BIN:
       state.push(action.recording);
       return [...state];
+    case DELETE_ITEM_FROM_BIN:
+      return state.filter((item) => item.id !== action.item.id);
     case DELETE_ALL:
       return [...state];
     case RESTORE:

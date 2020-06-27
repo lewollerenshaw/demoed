@@ -13,7 +13,7 @@ import listStyles from '../styles/list';
 import appStyles from '../styles/app';
 import searchStyles from '../styles/search';
 import { Colors } from '../styles/colors';
-import { sortListByDate, formatDate } from '../utils/helpers';
+import { sortListByDate, formatDate, idGenerator } from '../utils/helpers';
 import DeletedDemo from '../models/deletedDemo';
 import { STORAGE_KEY, BIN_STORAGE_KEY } from '../redux/storageKeys';
 
@@ -39,6 +39,7 @@ function DemoCollectionScreen() {
 
   const deleteItem = async (demo) => {
     const del = new DeletedDemo(
+      idGenerator(),
       Date.now(),
       demo,
     );
@@ -63,8 +64,6 @@ function DemoCollectionScreen() {
   const fetchDataAndSetInRedux = async () => {
     const storageDemos = JSON.parse(await AsyncStorage.getItem(STORAGE_KEY));
     const storageBin = JSON.parse(await AsyncStorage.getItem(BIN_STORAGE_KEY));
-
-    console.log(storageBin)
 
     if (storageDemos) dispatch(setDemos(storageDemos));
     if (storageBin) dispatch(setBin(storageBin));
