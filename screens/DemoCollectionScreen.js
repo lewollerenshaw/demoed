@@ -19,6 +19,7 @@ import { STORAGE_KEY, BIN_STORAGE_KEY } from '../redux/storageKeys';
 
 function DemoCollectionScreen() {
   const demos = useSelector((state) => state.demos);
+  const bin = useSelector((state) => state.bin);
   const navigation = useNavigation();
   const dispatch = useDispatch();
   const [list, setList] = React.useState([]);
@@ -82,11 +83,12 @@ function DemoCollectionScreen() {
           <View style={appStyles.headingRow}>
             <Text style={appStyles.heading}>Your collection</Text>
 
-            {true && (
+            {bin.length > 0
+              && (
               <TouchableOpacity style={appStyles.recentlyDeleted} onPress={() => navigation.navigate('RecentlyDeletedScreen')}>
                 <FontAwesomeIcon style={appStyles.recentlyDeletedIcon} size={20} icon={faTrash} />
               </TouchableOpacity>
-            )}
+              )}
           </View>
 
           <TextInput

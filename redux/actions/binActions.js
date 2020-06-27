@@ -25,6 +25,6 @@ export function deleteItemFromBin(item) {
   return { type: DELETE_ITEM_FROM_BIN, item };
 }
 
-export function restore(object) {
-  return { type: RESTORE, object };
+export function restore(bin) {
+  return { type: RESTORE, bin };
 }

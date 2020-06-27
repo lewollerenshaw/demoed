@@ -1,20 +1,24 @@
 import * as React from 'react';
 import {
-  Text, View, FlatList, TouchableOpacity, TextInput, AsyncStorage, Modal,
+  Text, View, FlatList, TouchableOpacity, TextInput, AsyncStorage, Modal, Dimensions,
 } from 'react-native';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faCompactDisc, faTrash, faFolder } from '@fortawesome/free-solid-svg-icons';
+import { faCompactDisc, faTrash } from '@fortawesome/free-solid-svg-icons';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import { useSelector, useDispatch } from 'react-redux';
+import Constants from 'expo-constants';
+import { useNavigation } from '@react-navigation/native';
 import listStyles from '../styles/list';
 import appStyles from '../styles/app';
 import searchStyles from '../styles/search';
 import { Colors } from '../styles/colors';
 import { formatDate } from '../utils/helpers';
-import { BIN_STORAGE_KEY } from '../redux/storageKeys';
-import { deleteItemFromBin, deleteAll } from '../redux/actions/binActions';
+import { BIN_STORAGE_KEY, STORAGE_KEY } from '../redux/storageKeys';
+import { deleteItemFromBin, deleteAll, setBin } from '../redux/actions/binActions';
+import { addDemo, deleteDemo } from '../redux/actions/demoActions';
 
 function RecentlyDeletedScreen() {
+  const navigation = useNavigation();
   const [deletedItems, setDeletedItems] = React.useState(useSelector((state) => state.bin));
   const [isModalVisible, setModalVisible] = React.useState(false);
   const demos = useSelector((state) => state.demos);
@@ -49,6 +53,27 @@ function RecentlyDeletedScreen() {
     dispatch(deleteAll());
     setDeletedItems([]);
     setModalVisible(false);
+
+    // Navigate back to collections
+    navigation.navigate('DemoCollectionScreen');
+  };
+
+  const restoreDemo = async (restoredDemo) => {
+
+    console.log('restoredDemo')
+    console.log(restoredDemo)
+    const updatedBinStorage = deletedItems.filter((item) => item.id !== restoredDemo.id);
+
+    console.log('updatedBinStorage');
+    console.log(updatedBinStorage);
+
+    await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(updatedBinStorage));
+    await AsyncStorage.setItem(BIN_STORAGE_KEY, JSON.stringify(updatedBinStorage));
+
+    // Update list of deleted demos
+    dispatch(addDemo(restoredDemo.demo));
+    setBin(updatedBinStorage);
+    setDeletedItems(updatedBinStorage);
   };
 
   return (
@@ -57,6 +82,7 @@ function RecentlyDeletedScreen() {
         <View style={appStyles.headerContainer}>
           <View style={appStyles.headingRow}>
             <Text style={appStyles.heading}>Recently deleted</Text>
+
             <TouchableOpacity
               style={appStyles.headerInteraction}
               onPress={() => setModalVisible(true)}
@@ -93,6 +119,7 @@ function RecentlyDeletedScreen() {
                 && (
                   <TouchableOpacity
                     style={listStyles.item}
+                    onPress={() => restoreRecording(item)}
                   >
                     <View style={listStyles.itemPrimaryColumn}>
                       <TextInput
@@ -119,6 +146,7 @@ function RecentlyDeletedScreen() {
                 && (
                   <TouchableOpacity
                     style={listStyles.item}
+                    onPress={() => restoreDemo(item)}
                   >
                     <View style={listStyles.itemPrimaryColumn}>
                       <TextInput
@@ -145,19 +173,46 @@ function RecentlyDeletedScreen() {
       {/* DELETE ALL MODAL */}
       <Modal
         visible={isModalVisible}
-        transparent={false}
+        transparent
       >
-        <View style={{ justifyContent: 'center', alignContent: 'center' }}>
-          <Text>
-            Are you sure you want to delete all?
-          </Text>
-
-          <TouchableOpacity onPress={() => deleteAllItems(false)}>
-            <Text>
-              Confirm
+        <View style={{
+          flex: 1, alignItems: 'center', justifyContent: 'center',
+        }}
+        >
+          <View style={{
+            backgroundColor: 'white',
+            padding: 35,
+            shadowColor: '#000',
+            margin: 20,
+            shadowOffset: {
+              width: 0,
+              height: 2,
+            },
+            shadowOpacity: 0.25,
+            shadowRadius: 3.84,
+            elevation: 5,
+          }}
+          >
+            <Text style={{ marginBottom: 20, fontSize: 20 }}>Confirm deletion</Text>
+            <Text style={{ marginBottom: 20, fontSize: 16 }}>
+              Are you sure you want to delete these demos? There is no going back
             </Text>
-          </TouchableOpacity>
 
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <TouchableOpacity style={{ marginRight: 10, backgroundColor: Colors.$primary, padding: 10 }} onPress={() => deleteAllItems(false)}>
+                <Text style={{ fontSize: 16, color: Colors.$lightShade }}>
+                  Yes, delete all recordings
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity style={{ padding: 10 }} onPress={() => setModalVisible(false)}>
+                <Text style={{ fontSize: 16, color: Colors.$primary }}>
+                  No
+                </Text>
+              </TouchableOpacity>
+            </View>
+
+          </View>
         </View>
       </Modal>
     </View>
