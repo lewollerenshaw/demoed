@@ -9,6 +9,7 @@ import { addDemo, addRecording } from '../redux/actions/demoActions';
 import Demo from '../models/demo';
 import Recording from '../models/recording';
 import { idGenerator } from '../utils/helpers';
+import { BIN_STORAGE_KEY } from '../redux/storageKeys';
 
 function record() {
   const [permissions, setPermissions] = React.useState();
@@ -147,6 +148,10 @@ function record() {
     console.log(directory);
   }
 
+  async function checkBinInLocalStorage() {
+    console.log(JSON.parse(await AsyncStorage.getItem(BIN_STORAGE_KEY)));
+  }
+
   async function removeDemosFromStorage() {
     await AsyncStorage.clear();
   }
@@ -270,6 +275,26 @@ function record() {
           </Text>
         </TouchableWithoutFeedback>
       </View>
+
+      <View style={{
+        width: '100%',
+        height: 40,
+        border: 'solid',
+        borderWidth: 1,
+        borderColor: 'black',
+        justifyContent: 'center',
+      }}
+      >
+        <TouchableWithoutFeedback onPress={() => checkBinInLocalStorage()}>
+          <Text style={{
+            alignSelf: 'center',
+          }}
+          >
+            Check bin in local storage
+          </Text>
+        </TouchableWithoutFeedback>
+      </View>
+
       <View style={{
         width: '100%',
         height: 40,

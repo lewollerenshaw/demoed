@@ -1,12 +1,11 @@
 import * as React from 'react';
 import {
-  Text, View, FlatList, TouchableOpacity, TextInput, AsyncStorage, Modal, Dimensions,
+  Text, View, FlatList, TouchableOpacity, TextInput, AsyncStorage, Modal,
 } from 'react-native';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faCompactDisc, faTrash } from '@fortawesome/free-solid-svg-icons';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import { useSelector, useDispatch } from 'react-redux';
-import Constants from 'expo-constants';
 import { useNavigation } from '@react-navigation/native';
 import listStyles from '../styles/list';
 import appStyles from '../styles/app';
@@ -15,7 +14,7 @@ import { Colors } from '../styles/colors';
 import { formatDate } from '../utils/helpers';
 import { BIN_STORAGE_KEY, STORAGE_KEY } from '../redux/storageKeys';
 import { deleteItemFromBin, deleteAll, setBin } from '../redux/actions/binActions';
-import { addDemo, deleteDemo } from '../redux/actions/demoActions';
+import { addDemo } from '../redux/actions/demoActions';
 
 function RecentlyDeletedScreen() {
   const navigation = useNavigation();
@@ -59,21 +58,20 @@ function RecentlyDeletedScreen() {
   };
 
   const restoreDemo = async (restoredDemo) => {
-
-    console.log('restoredDemo')
-    console.log(restoredDemo)
+    // Update list of recently deleted
     const updatedBinStorage = deletedItems.filter((item) => item.id !== restoredDemo.id);
 
-    console.log('updatedBinStorage');
-    console.log(updatedBinStorage);
-
-    await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(updatedBinStorage));
+    // Remove item from bin
     await AsyncStorage.setItem(BIN_STORAGE_KEY, JSON.stringify(updatedBinStorage));
-
-    // Update list of deleted demos
-    dispatch(addDemo(restoredDemo.demo));
     setBin(updatedBinStorage);
     setDeletedItems(updatedBinStorage);
+
+    // Update stores list of demos
+    dispatch(addDemo(restoredDemo.demo));
+    await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(demos));
+
+    // If nothing in bin, navigate back
+    if (updatedBinStorage.length < 1) navigation.navigate('DemoCollectionScreen');
   };
 
   return (
@@ -122,11 +120,11 @@ function RecentlyDeletedScreen() {
                     onPress={() => restoreRecording(item)}
                   >
                     <View style={listStyles.itemPrimaryColumn}>
-                      <TextInput
+                      <Text
                         style={listStyles.itemHeader}
                       >
                         {item.recording.title}
-                      </TextInput>
+                      </Text>
                       <View style={listStyles.itemAssociatedInfo}>
                         <Text style={listStyles.itemDate}>{`${formatDate(item.recording.dateCreated)}`}</Text>
                         <Text style={listStyles.itemType}>
