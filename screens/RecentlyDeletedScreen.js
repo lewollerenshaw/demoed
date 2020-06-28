@@ -45,8 +45,7 @@ function RecentlyDeletedScreen() {
 
   const deleteAllItems = async () => {
     // Remove from local bin storage
-    const updatedBin = [];
-    await AsyncStorage.setItem(BIN_STORAGE_KEY, JSON.stringify(updatedBin));
+    await AsyncStorage.setItem(BIN_STORAGE_KEY, JSON.stringify([]));
 
     // Update redux
     dispatch(deleteAll());
@@ -63,7 +62,7 @@ function RecentlyDeletedScreen() {
 
     // Remove item from bin
     await AsyncStorage.setItem(BIN_STORAGE_KEY, JSON.stringify(updatedBinStorage));
-    setBin(updatedBinStorage);
+    dispatch(setBin(updatedBinStorage));
     setDeletedItems(updatedBinStorage);
 
     // Update stores list of demos
@@ -72,6 +71,10 @@ function RecentlyDeletedScreen() {
 
     // If nothing in bin, navigate back
     if (updatedBinStorage.length < 1) navigation.navigate('DemoCollectionScreen');
+  };
+
+  const restoreRecording = async (restoredRecording) => {
+
   };
 
   return (

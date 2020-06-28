@@ -23,7 +23,7 @@ export default function binReducer(state = initialState.bin, action) {
     case DELETE_ALL:
       return [];
     case RESTORE:
-      return action.bin;
+      return state.filter((item) => item.id !== action.item.id);
     default:
       return state;
   }
