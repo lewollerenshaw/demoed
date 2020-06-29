@@ -14,7 +14,7 @@ import listStyles from '../styles/list';
 import { Colors } from '../styles/colors';
 import searchStyles from '../styles/search';
 import {
-  tagStringBuilder, formatDate, sortListByDate, hasSearchTextInTags,
+  tagStringBuilder, formatDate, sortListByDate, hasSearchTextInTags, idGenerator,
 } from '../utils/helpers';
 import DeletedRecording from '../models/deletedRecording';
 import { STORAGE_KEY, BIN_STORAGE_KEY } from '../redux/storageKeys';
@@ -41,6 +41,7 @@ function DemoScreen(_demo) {
 
   const deleteItem = async (recording) => {
     const del = new DeletedRecording(
+      idGenerator(),
       Date.now(),
       demo.id,
       recording,

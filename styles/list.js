@@ -53,6 +53,14 @@ const listStyles = StyleSheet.create({
   itemInfo: {
     opacity: 0.6,
   },
+
+  /* Recently Deleted Screen Specific */
+  itemType: {
+    opacity: 0.6,
+  },
+  itemAssociatedInfo: {
+    flexDirection: 'row',
+  },
 });
 
 export default listStyles;

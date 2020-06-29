@@ -36,6 +36,14 @@ const appStyles = StyleSheet.create({
     color: Colors.$info,
     opacity: 0.8,
   },
+  headerInteraction: {
+    justifyContent: 'center',
+    alignContent: 'center',
+  },
+  headingInteractionText: {
+    color: Colors.$danger,
+    fontSize: 16,
+  },
 });
 
 export default appStyles;

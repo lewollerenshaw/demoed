@@ -8,17 +8,18 @@ import { faCompactDisc, faTrash } from '@fortawesome/free-solid-svg-icons';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import { useSelector, useDispatch } from 'react-redux';
 import { setDemos, deleteDemo } from '../redux/actions/demoActions';
-import { addDemoToBin } from '../redux/actions/binActions';
+import { addDemoToBin, setBin } from '../redux/actions/binActions';
 import listStyles from '../styles/list';
 import appStyles from '../styles/app';
 import searchStyles from '../styles/search';
 import { Colors } from '../styles/colors';
-import { sortListByDate, formatDate } from '../utils/helpers';
+import { sortListByDate, formatDate, idGenerator } from '../utils/helpers';
 import DeletedDemo from '../models/deletedDemo';
 import { STORAGE_KEY, BIN_STORAGE_KEY } from '../redux/storageKeys';
 
 function DemoCollectionScreen() {
   const demos = useSelector((state) => state.demos);
+  const bin = useSelector((state) => state.bin);
   const navigation = useNavigation();
   const dispatch = useDispatch();
   const [list, setList] = React.useState([]);
@@ -39,6 +40,7 @@ function DemoCollectionScreen() {
 
   const deleteItem = async (demo) => {
     const del = new DeletedDemo(
+      idGenerator(),
       Date.now(),
       demo,
     );
@@ -62,8 +64,10 @@ function DemoCollectionScreen() {
 
   const fetchDataAndSetInRedux = async () => {
     const storageDemos = JSON.parse(await AsyncStorage.getItem(STORAGE_KEY));
+    const storageBin = JSON.parse(await AsyncStorage.getItem(BIN_STORAGE_KEY));
 
     if (storageDemos) dispatch(setDemos(storageDemos));
+    if (storageBin) dispatch(setBin(storageBin));
   };
 
   React.useEffect(() => {
@@ -79,11 +83,12 @@ function DemoCollectionScreen() {
           <View style={appStyles.headingRow}>
             <Text style={appStyles.heading}>Your collection</Text>
 
-            {true && (
+            {bin.length > 0
+              && (
               <TouchableOpacity style={appStyles.recentlyDeleted} onPress={() => navigation.navigate('RecentlyDeletedScreen')}>
                 <FontAwesomeIcon style={appStyles.recentlyDeletedIcon} size={20} icon={faTrash} />
               </TouchableOpacity>
-            )}
+              )}
           </View>
 
           <TextInput
