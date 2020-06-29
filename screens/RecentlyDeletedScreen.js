@@ -248,11 +248,11 @@ function RecentlyDeletedScreen() {
                   onPress={() => restoreRecording(item)}
                 >
                   <View style={listStyles.itemPrimaryColumn}>
-                    <TextInput
+                    <Text
                       style={listStyles.itemHeader}
                     >
                       {item.title}
-                    </TextInput>
+                    </Text>
                     <Text style={listStyles.itemDate}>{formatDate(item.dateCreated)}</Text>
                   </View>
 

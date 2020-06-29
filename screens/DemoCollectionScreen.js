@@ -7,7 +7,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faCompactDisc, faTrash } from '@fortawesome/free-solid-svg-icons';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import { useSelector, useDispatch } from 'react-redux';
-import { setDemos, deleteDemo } from '../redux/actions/demoActions';
+import { setDemos, deleteDemo, updateDemo } from '../redux/actions/demoActions';
 import { addDemoToBin, setBin } from '../redux/actions/binActions';
 import listStyles from '../styles/list';
 import appStyles from '../styles/app';
@@ -69,6 +69,13 @@ function DemoCollectionScreen() {
     if (storageBin) dispatch(setBin(storageBin));
   };
 
+  const updateDemoName = async (demo, newTitle) => {
+    demo.title = newTitle;
+    dispatch(updateDemo(demo));
+
+    await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(demos));
+  };
+
   React.useEffect(() => {
     fetchDataAndSetInRedux();
   }, []);
@@ -118,6 +125,7 @@ function DemoCollectionScreen() {
                 <View style={listStyles.itemPrimaryColumn}>
                   <TextInput
                     style={listStyles.itemHeader}
+                    onChangeText={(value) => updateDemoName(item, value)}
                   >
                     {item.title}
                   </TextInput>
