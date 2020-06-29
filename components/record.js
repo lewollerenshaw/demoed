@@ -272,8 +272,6 @@ function record() {
         </TouchableWithoutFeedback>
       </View>
 
-     
-
       <View style={{
         width: '100%',
         height: 40,
