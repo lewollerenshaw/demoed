@@ -9,6 +9,7 @@ import {
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
+import * as FileSystem from 'expo-file-system';
 import listStyles from '../styles/list';
 import appStyles from '../styles/app';
 import searchStyles from '../styles/search';
@@ -38,10 +39,21 @@ function RecentlyDeletedScreen() {
     return title;
   };
 
+  const removeFromAsync = async (item) => {
+    if (item.associatedDemo) await FileSystem.deleteAsync(`${item.recording.URI}`);
+    else {
+      item.demo.recordings.forEach(async (recording) => {
+        await FileSystem.deleteAsync(`${recording.URI}`);
+      });
+    }
+  };
+
   const deleteItem = async (item) => {
     // Remove from local bin storage
     const updatedBin = deletedItems.filter((itemInBin) => itemInBin.id !== item.id);
     await AsyncStorage.setItem(BIN_STORAGE_KEY, JSON.stringify(updatedBin));
+
+    removeFromAsync(item);
 
     // Update redux
     dispatch(deleteItemFromBin(item));
@@ -51,6 +63,10 @@ function RecentlyDeletedScreen() {
   const deleteAllItems = async () => {
     // Remove from local bin storage
     await AsyncStorage.setItem(BIN_STORAGE_KEY, JSON.stringify([]));
+
+    deletedItems.forEach(async (item) => {
+      removeFromAsync(item);
+    });
 
     // Update redux
     dispatch(deleteAll());

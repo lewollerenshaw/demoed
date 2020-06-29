@@ -152,10 +152,6 @@ function record() {
     console.log(JSON.parse(await AsyncStorage.getItem(BIN_STORAGE_KEY)));
   }
 
-  async function removeDemosFromStorage() {
-    await AsyncStorage.clear();
-  }
-
   async function removeRecordingsFromDir() {
     await FileSystem.deleteAsync(`${FileSystem.documentDirectory}recordings/`);
   }
