@@ -2,7 +2,7 @@ import * as React from 'react';
 import {
   Text, View, FlatList, TouchableOpacity, TextInput, AsyncStorage,
 } from 'react-native';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
@@ -21,6 +21,7 @@ import { STORAGE_KEY, BIN_STORAGE_KEY } from '../redux/storageKeys';
 
 function DemoScreen(_demo) {
   const [demo, setDemo] = React.useState(_demo.route.params.item);
+  const demos = useSelector((state) => state.demos);
   const [list, setList] = React.useState(demo.recordings);
   const dispatch = useDispatch();
 
@@ -73,6 +74,26 @@ function DemoScreen(_demo) {
     setList(demo.recordings);
   };
 
+  const updateRecordingName = async (recording, newTitle) => {
+    recording.title = newTitle;
+
+    const updatedRecordings = demo.recordings.filter((item) => item.id !== recording.id);
+
+    updatedRecordings.push(recording);
+    demo.recordings = updatedRecordings;
+
+    dispatch(updateDemo(demo));
+
+    await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(demos));
+  };
+
+  const updateDemoName = async (newTitle) => {
+    demo.title = newTitle;
+    dispatch(updateDemo(demo));
+
+    await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(demos));
+  };
+
   React.useEffect(() => {
     dispatch(setCurrentDemoId(demo.id));
   }, []);
@@ -81,7 +102,12 @@ function DemoScreen(_demo) {
     <View style={appStyles.container}>
       <View style={appStyles.body}>
         <View style={appStyles.headerContainer}>
-          <Text style={appStyles.heading}>{demo.title}</Text>
+          <TextInput
+            style={appStyles.heading}
+            onChangeText={(value) => updateDemoName(value)}
+          >
+            {demo.title}
+          </TextInput>
           <TextInput
             style={searchStyles.input}
             onChangeText={(text) => updateSearchResults(text.toLowerCase())}
@@ -112,6 +138,7 @@ function DemoScreen(_demo) {
                 <View style={listStyles.itemPrimaryColumn}>
                   <TextInput
                     style={listStyles.itemHeader}
+                    onChangeText={(value) => updateRecordingName(item, value)}
                   >
                     {item.title}
                   </TextInput>

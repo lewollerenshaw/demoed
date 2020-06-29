@@ -190,44 +190,6 @@ function record() {
         justifyContent: 'center',
       }}
       >
-        <TouchableWithoutFeedback onPress={() => console.log(isRecording)}>
-          <Text style={{
-            alignSelf: 'center',
-          }}
-          >
-            Check is recording
-          </Text>
-        </TouchableWithoutFeedback>
-      </View>
-
-      <View style={{
-        width: '100%',
-        height: 40,
-        border: 'solid',
-        borderWidth: 1,
-        borderColor: 'black',
-        justifyContent: 'center',
-      }}
-      >
-        <TouchableWithoutFeedback onPress={() => console.log(recordingInstance)}>
-          <Text style={{
-            alignSelf: 'center',
-          }}
-          >
-            Check recording instance
-          </Text>
-        </TouchableWithoutFeedback>
-      </View>
-
-      <View style={{
-        width: '100%',
-        height: 40,
-        border: 'solid',
-        borderWidth: 1,
-        borderColor: 'black',
-        justifyContent: 'center',
-      }}
-      >
         <TouchableWithoutFeedback onPress={() => console.log(demos)}>
           <Text style={{
             alignSelf: 'center',
@@ -314,24 +276,7 @@ function record() {
         </TouchableWithoutFeedback>
       </View>
 
-      <View style={{
-        width: '100%',
-        height: 40,
-        border: 'solid',
-        borderWidth: 1,
-        borderColor: 'black',
-        justifyContent: 'center',
-      }}
-      >
-        <TouchableWithoutFeedback onPress={() => removeDemosFromStorage()}>
-          <Text style={{
-            alignSelf: 'center',
-          }}
-          >
-            Remove demos in local storage
-          </Text>
-        </TouchableWithoutFeedback>
-      </View>
+     
 
       <View style={{
         width: '100%',
