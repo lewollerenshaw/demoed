@@ -77,30 +77,38 @@ function record() {
   const storeRecording = async (URI, response) => {
     const recording = new Recording(
       idGenerator(),
-      'Recording Title',
+      '',
       response.durationMillis,
-      ['Tag1, Tag2'],
+      [],
       URI,
       new Date(),
     );
 
     if (currentScreen === 'DemoCollectionScreen') {
+      recording.title = 'Take 1';
+
       const demo = new Demo(
         idGenerator(),
-        'Demo Title',
+        `Demo ${demos.length + 1}`,
         [recording],
         new Date(),
       );
 
       dispatch(addDemo(demo));
 
-      const storageData = JSON.parse(await AsyncStorage.getItem(STORAGE_KEY));
+      let storageData = JSON.parse(await AsyncStorage.getItem(STORAGE_KEY));
 
-      if (storageData !== null) {
-        storageData.push(demo);
-        await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(storageData));
-      } else await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify([demo]));
+      storageData !== null ? storageData.push(demo) : storageData = [demo];
+
+      await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(storageData));
     } else {
+      // Set recording name
+
+      const currentDemo = demos.filter((demo) => demo.id === currentDemoId);
+
+      console.log(currentDemo);
+      recording.title = `Take ${currentDemo[0].recordings.length + 1}`;
+
       dispatch(addRecording(recording, currentDemoId));
 
       const storageData = JSON.parse(await AsyncStorage.getItem(STORAGE_KEY));
