@@ -103,10 +103,7 @@ function record() {
       await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(storageData));
     } else {
       // Set recording name
-
       const currentDemo = demos.filter((demo) => demo.id === currentDemoId);
-
-      console.log(currentDemo);
       recording.title = `Take ${currentDemo[0].recordings.length + 1}`;
 
       dispatch(addRecording(recording, currentDemoId));
