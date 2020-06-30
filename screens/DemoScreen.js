@@ -142,7 +142,10 @@ function DemoScreen(_demo) {
                   >
                     {item.title}
                   </TextInput>
-                  <Text style={listStyles.itemInfo}>{`${formatDate(item.dateCreated)} - ${tagStringBuilder(item.tags)}`}</Text>
+                  <Text style={listStyles.itemInfo}>
+                    {`${formatDate(item.dateCreated)}`}
+                    {item.tags.length > 0 && `- ${tagStringBuilder(item.tags)}`}
+                  </Text>
                 </View>
 
                 <View style={listStyles.itemSecondaryColumn}>
