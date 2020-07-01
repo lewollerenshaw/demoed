@@ -25,6 +25,7 @@ function DemoScreen(_demo) {
   const demos = useSelector((state) => state.demos);
   const [list, setList] = React.useState(demo.recordings);
   const [open, setOpen] = React.useState(false);
+  const [currentRecordingId, setCurrentRecordingId] = React.useState();
   const dispatch = useDispatch();
 
   const updateSearchResults = (search) => {
@@ -96,6 +97,11 @@ function DemoScreen(_demo) {
     await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(demos));
   };
 
+  const toggleMediaplayer = (id) => {
+    setCurrentRecordingId(id);
+    setOpen((prev) => !prev);
+  };
+
   React.useEffect(() => {
     dispatch(setCurrentDemoId(demo.id));
   }, []);
@@ -136,8 +142,9 @@ function DemoScreen(_demo) {
             >
               <TouchableOpacity
                 style={listStyles.item}
-                onPress={() => setOpen((prev) => !prev)}
+                onPress={() => toggleMediaplayer(item.id)}
               >
+
                 <View style={listStyles.itemPrimaryColumn}>
                   <TextInput
                     style={listStyles.itemHeader}
@@ -156,9 +163,8 @@ function DemoScreen(_demo) {
                 </View>
 
               </TouchableOpacity>
-              <Mediaplayer open={open} />
+              {currentRecordingId === item.id && (<Mediaplayer open={open} />)}
             </Swipeable>
-
           )}
           keyExtractor={(_item, index) => index.toString()}
         />
