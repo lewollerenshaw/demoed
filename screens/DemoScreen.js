@@ -1,6 +1,6 @@
 import * as React from 'react';
 import {
-  Text, View, FlatList, TouchableOpacity, TextInput, AsyncStorage,
+  Text, View, FlatList, TouchableOpacity, TextInput, AsyncStorage, UIManager, Platform, LayoutAnimation,
 } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
@@ -17,12 +17,22 @@ import {
   tagStringBuilder, formatDate, sortListByDate, hasSearchTextInTags, idGenerator,
 } from '../utils/helpers';
 import DeletedRecording from '../models/deletedRecording';
+import Mediaplayer from '../components/mediaplayer';
 import { STORAGE_KEY, BIN_STORAGE_KEY } from '../redux/storageKeys';
+
+if (
+  Platform.OS === 'android'
+  && UIManager.setLayoutAnimationEnabledExperimental
+) {
+  UIManager.setLayoutAnimationEnabledExperimental(true);
+}
 
 function DemoScreen(_demo) {
   const [demo, setDemo] = React.useState(_demo.route.params.item);
   const demos = useSelector((state) => state.demos);
   const [list, setList] = React.useState(demo.recordings);
+  const [open, setOpen] = React.useState(false);
+  const [currentRecordingId, setCurrentRecordingId] = React.useState();
   const dispatch = useDispatch();
 
   const updateSearchResults = (search) => {
@@ -94,6 +104,12 @@ function DemoScreen(_demo) {
     await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(demos));
   };
 
+  const toggleMediaplayer = (id) => {
+    setCurrentRecordingId(id);
+    setOpen((prev) => !prev);
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
+  };
+
   React.useEffect(() => {
     dispatch(setCurrentDemoId(demo.id));
   }, []);
@@ -134,7 +150,9 @@ function DemoScreen(_demo) {
             >
               <TouchableOpacity
                 style={listStyles.item}
+                onPress={() => toggleMediaplayer(item.id)}
               >
+
                 <View style={listStyles.itemPrimaryColumn}>
                   <TextInput
                     style={listStyles.itemHeader}
@@ -151,7 +169,9 @@ function DemoScreen(_demo) {
                 <View style={listStyles.itemSecondaryColumn}>
                   <Text style={listStyles.itemRecordingDuration}>{item.duration}</Text>
                 </View>
+
               </TouchableOpacity>
+              {currentRecordingId === item.id && (<Mediaplayer open={open} rec={item} />)}
             </Swipeable>
           )}
           keyExtractor={(_item, index) => index.toString()}
