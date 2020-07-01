@@ -7,10 +7,13 @@ const styles = StyleSheet.create({
   },
 });
 
-function mediaplayer(open) {
-  const height = open.open === true ? 'auto' : 0;
+function mediaplayer({ open, rec }) {
+  const height = open === true ? 'auto' : 0;
   return (
-    <View style={[styles.container, { height }]}>
+    <View style={[styles.container, {
+      height,
+    }]}
+    >
       <Text />
     </View>
   );

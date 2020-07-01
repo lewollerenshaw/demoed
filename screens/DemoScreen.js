@@ -1,6 +1,6 @@
 import * as React from 'react';
 import {
-  Text, View, FlatList, TouchableOpacity, TextInput, AsyncStorage,
+  Text, View, FlatList, TouchableOpacity, TextInput, AsyncStorage, UIManager, Platform, LayoutAnimation,
 } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
@@ -19,6 +19,13 @@ import {
 import DeletedRecording from '../models/deletedRecording';
 import Mediaplayer from '../components/mediaplayer';
 import { STORAGE_KEY, BIN_STORAGE_KEY } from '../redux/storageKeys';
+
+if (
+  Platform.OS === 'android'
+  && UIManager.setLayoutAnimationEnabledExperimental
+) {
+  UIManager.setLayoutAnimationEnabledExperimental(true);
+}
 
 function DemoScreen(_demo) {
   const [demo, setDemo] = React.useState(_demo.route.params.item);
@@ -100,6 +107,7 @@ function DemoScreen(_demo) {
   const toggleMediaplayer = (id) => {
     setCurrentRecordingId(id);
     setOpen((prev) => !prev);
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
   };
 
   React.useEffect(() => {
@@ -163,7 +171,7 @@ function DemoScreen(_demo) {
                 </View>
 
               </TouchableOpacity>
-              {currentRecordingId === item.id && (<Mediaplayer open={open} />)}
+              {currentRecordingId === item.id && (<Mediaplayer open={open} rec={item} />)}
             </Swipeable>
           )}
           keyExtractor={(_item, index) => index.toString()}
