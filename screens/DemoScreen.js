@@ -17,12 +17,14 @@ import {
   tagStringBuilder, formatDate, sortListByDate, hasSearchTextInTags, idGenerator,
 } from '../utils/helpers';
 import DeletedRecording from '../models/deletedRecording';
+import Mediaplayer from '../components/mediaplayer';
 import { STORAGE_KEY, BIN_STORAGE_KEY } from '../redux/storageKeys';
 
 function DemoScreen(_demo) {
   const [demo, setDemo] = React.useState(_demo.route.params.item);
   const demos = useSelector((state) => state.demos);
   const [list, setList] = React.useState(demo.recordings);
+  const [open, setOpen] = React.useState(false);
   const dispatch = useDispatch();
 
   const updateSearchResults = (search) => {
@@ -134,6 +136,7 @@ function DemoScreen(_demo) {
             >
               <TouchableOpacity
                 style={listStyles.item}
+                onPress={() => setOpen((prev) => !prev)}
               >
                 <View style={listStyles.itemPrimaryColumn}>
                   <TextInput
@@ -151,8 +154,11 @@ function DemoScreen(_demo) {
                 <View style={listStyles.itemSecondaryColumn}>
                   <Text style={listStyles.itemRecordingDuration}>{item.duration}</Text>
                 </View>
+
               </TouchableOpacity>
+              <Mediaplayer open={open} />
             </Swipeable>
+
           )}
           keyExtractor={(_item, index) => index.toString()}
         />
