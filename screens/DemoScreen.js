@@ -1,11 +1,11 @@
 import * as React from 'react';
 import {
-  Text, View, FlatList, TouchableOpacity, TextInput, AsyncStorage, UIManager, Platform, LayoutAnimation,
+  Text, View, FlatList, TouchableOpacity, TextInput, AsyncStorage, UIManager, Platform, LayoutAnimation, NativeModules,
 } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faTrash } from '@fortawesome/free-solid-svg-icons';
-import Swipeable from 'react-native-gesture-handler/Swipeable';
+import { faTrash, faShare } from '@fortawesome/free-solid-svg-icons';
+import * as Sharing from 'expo-sharing';
 import { addRecordingToBin } from '../redux/actions/binActions';
 import { updateDemo } from '../redux/actions/demoActions';
 import { setCurrentDemoId } from '../redux/actions/globalActions';
@@ -110,6 +110,14 @@ function DemoScreen(_demo) {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
   };
 
+  const handleShare = async (recording) => {
+    if (!(await Sharing.isAvailableAsync())) {
+      alert('Uh oh, sharing isn\'t available on your platform');
+      return;
+    }
+    Sharing.shareAsync(recording.URI);
+  };
+
   React.useEffect(() => {
     dispatch(setCurrentDemoId(demo.id));
   }, []);
@@ -135,44 +143,50 @@ function DemoScreen(_demo) {
         <FlatList
           data={sortListByDate(list)}
           renderItem={({ item }) => (
-            <Swipeable
-              renderRightActions={() => (
-                <TouchableOpacity
-                  style={listStyles.deleteButton}
-                  onPress={() => deleteItem(item)}
-                >
-                  <FontAwesomeIcon style={listStyles.deleteButtonIcon} icon={faTrash} />
-                </TouchableOpacity>
-              )}
-              friction={2}
-              rightThreshold={80}
-              leftThreshold={80}
+
+            <TouchableOpacity
+              style={listStyles.item}
+              onPress={() => toggleMediaplayer(item.id)}
             >
-              <TouchableOpacity
-                style={listStyles.item}
-                onPress={() => toggleMediaplayer(item.id)}
-              >
 
-                <View style={listStyles.itemPrimaryColumn}>
-                  <TextInput
-                    style={listStyles.itemHeader}
-                    onChangeText={(value) => updateRecordingName(item, value)}
-                  >
-                    {item.title}
-                  </TextInput>
-                  <Text style={listStyles.itemInfo}>
-                    {`${formatDate(item.dateCreated)}`}
-                    {item.tags.length > 0 && `- ${tagStringBuilder(item.tags)}`}
-                  </Text>
+              <View style={listStyles.itemPrimaryColumn}>
+                <TextInput
+                  style={listStyles.itemHeader}
+                  onChangeText={(value) => updateRecordingName(item, value)}
+                >
+                  {item.title}
+                </TextInput>
+                <Text style={listStyles.itemInfo}>
+                  {`${formatDate(item.dateCreated)}`}
+                  {item.tags.length > 0 && `- ${tagStringBuilder(item.tags)}`}
+                </Text>
+              </View>
+
+              <View style={listStyles.itemSecondaryColumn}>
+                <Text style={listStyles.itemRecordingDuration}>{item.duration}</Text>
+              </View>
+              {open === true && (
+                <View>
+                  {currentRecordingId === item.id && (
+                    <View>
+                      <TouchableOpacity
+                        onPress={() => handleShare(item)}
+                      >
+                        <FontAwesomeIcon icon={faShare} />
+                      </TouchableOpacity>
+                      <Mediaplayer open={open} rec={item} />
+                      <TouchableOpacity
+                        // style={listStyles.deleteButton}
+                        onPress={() => deleteItem(item)}
+                      >
+                        <FontAwesomeIcon style={listStyles.deleteButtonIcon} icon={faTrash} />
+                      </TouchableOpacity>
+                    </View>
+                  )}
                 </View>
+              )}
 
-                <View style={listStyles.itemSecondaryColumn}>
-                  <Text style={listStyles.itemRecordingDuration}>{item.duration}</Text>
-                </View>
-
-              </TouchableOpacity>
-              {currentRecordingId === item.id && (<Mediaplayer open={open} rec={item} />)}
-            </Swipeable>
+            </TouchableOpacity>
           )}
           keyExtractor={(_item, index) => index.toString()}
         />
