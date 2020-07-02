@@ -3,7 +3,7 @@ import { Colors } from './colors';
 
 const mediaplayerStyles = StyleSheet.create({
   container: {
-    backgroundColor: 'red',
+    // backgroundColor: 'red',
   },
 });
 

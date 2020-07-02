@@ -29,7 +29,7 @@ function record() {
   };
 
   const recordingCallback = (status) => {
-    console.log(status);
+    //console.log(status);
   };
 
   const createRecordingInstance = () => {
