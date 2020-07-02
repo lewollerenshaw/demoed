@@ -33,10 +33,19 @@ const hasSearchTextInTags = (search, tags) => {
 
 const idGenerator = () => String.fromCharCode(65 + Math.floor(Math.random() * 26)) + Date.now();
 
+const millisToMinutesAndSeconds = (millis) => {
+  const minutes = Math.floor(millis / 60000);
+  const seconds = Math.floor((millis / 1000) % 60);
+  return seconds === 60
+    ? `${minutes + 1}:00`
+    : `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+};
+
 module.exports = {
   tagStringBuilder,
   sortListByDate,
   formatDate,
   hasSearchTextInTags,
   idGenerator,
+  millisToMinutesAndSeconds,
 };
