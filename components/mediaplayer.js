@@ -99,12 +99,32 @@ function mediaplayer({ open, rec }) {
     setDurationSecs(millisToMinutesAndSeconds(rec.duration));
   }, [rec]);
 
+  async function onCompleteSliding(value) {
+    if (playbackInstance !== null) {
+      setIsSeeking(false);
+      if (paused) {
+        playbackInstance.setPositionAsync(value);
+      } else if (!paused) {
+        playbackInstance.playFromPositionAsync(value);
+        setPaused(false);
+      }
+      setIsSeeking(false);
+    }
+  }
+
+  async function handleValueChange(value) {
+    playbackInstance.pauseAsync();
+    playbackInstance.setPositionAsync(value);
+  }
+
   return (
     <View style={[mediaplayerStyles.container, { height }]}>
       <TouchableOpacity onPress={handleShare}>
         <FontAwesomeIcon icon={faShare} />
         <Slider
           value={position}
+          onValueChange={(val) => handleValueChange(val)}
+          onSlidingComplete={(val) => onCompleteSliding(val)}
           minimumValue={0}
           maximumValue={duration}
           thumbTintColor={Colors.$primary}
