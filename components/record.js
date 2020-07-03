@@ -6,10 +6,10 @@ import {
 } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 import { addDemo, addRecording } from '../redux/actions/demoActions';
+import { shouldNavigate } from '../redux/actions/globalActions';
 import Demo from '../models/demo';
 import Recording from '../models/recording';
 import { idGenerator } from '../utils/helpers';
-import { BIN_STORAGE_KEY } from '../redux/storageKeys';
 
 function record() {
   const [permissions, setPermissions] = React.useState();
@@ -17,7 +17,6 @@ function record() {
   const [recordingInstance, setRecordingInstance] = React.useState(null);
   const currentScreen = useSelector((state) => state.global.currentScreen);
   const currentDemoId = useSelector((state) => state.global.currentDemoId);
-  const bin = useSelector((state) => state.bin);
   const demos = useSelector((state) => state.demos);
   const dispatch = useDispatch();
 
@@ -86,9 +85,9 @@ function record() {
 
     if (currentScreen === 'DemoCollectionScreen') {
       recording.title = 'Take 1';
-
+      const demoId = idGenerator()
       const demo = new Demo(
-        idGenerator(),
+        demoId,
         `Demo ${demos.length + 1}`,
         [recording],
         new Date(),
@@ -101,6 +100,8 @@ function record() {
       storageData !== null ? storageData.push(demo) : storageData = [demo];
 
       await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(storageData));
+
+      dispatch(shouldNavigate({ shouldNav: true, demoId }));
     } else {
       // Set recording name
       const currentDemo = demos.filter((demo) => demo.id === currentDemoId);

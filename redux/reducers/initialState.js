@@ -5,5 +5,9 @@ export default {
     darkMode: false,
     currentScreen: 'DemoCollectionScreen',
     currentDemoId: '',
+    navigate: {
+      shouldNav: false,
+      demoId: '',
+    },
   },
 };

@@ -3,6 +3,7 @@ import {
   SET_DARK_MODE,
   SET_CURRENT_SCREEN,
   SET_CURRENT_DEMO_ID,
+  SHOULD_NAVIGATE,
 } from '../actions/globalActions';
 
 export default function globalReducer(state = initialState.global, action) {
@@ -13,6 +14,14 @@ export default function globalReducer(state = initialState.global, action) {
       return { ...state, currentScreen: action.screenId };
     case SET_CURRENT_DEMO_ID:
       return { ...state, currentDemoId: action.demoId };
+    case SHOULD_NAVIGATE:
+      return {
+        ...state,
+        navigate: {
+          shouldNav: action.navigateObj.shouldNav,
+          demoId: action.navigateObj.demoId,
+        },
+      };
     default:
       return state;
   }

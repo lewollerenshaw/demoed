@@ -10,6 +10,7 @@ import Swipeable from 'react-native-gesture-handler/Swipeable';
 import { useSelector, useDispatch } from 'react-redux';
 import { setDemos, deleteDemo, updateDemo } from '../redux/actions/demoActions';
 import { addDemoToBin, setBin } from '../redux/actions/binActions';
+import { shouldNavigate } from '../redux/actions/globalActions';
 import listStyles from '../styles/list';
 import appStyles from '../styles/app';
 import searchStyles from '../styles/search';
@@ -20,6 +21,7 @@ import { STORAGE_KEY, BIN_STORAGE_KEY } from '../redux/storageKeys';
 
 function DemoCollectionScreen() {
   const demos = useSelector((state) => state.demos);
+  const navigate = useSelector((state) => state.global.navigate)
   const navigation = useNavigation();
   const dispatch = useDispatch();
   const [list, setList] = React.useState([]);
@@ -82,6 +84,15 @@ function DemoCollectionScreen() {
   }, []);
 
   React.useEffect(() => (demos ? setList(demos) : setList([])), [demos]);
+
+  React.useEffect(() => {
+    const demoToNav = demos.filter((demo) => demo.id === navigate.demoId);
+    const item = demoToNav[0];
+    if (navigate.shouldNav === true) {
+      dispatch(shouldNavigate({ shouldNav: false }));
+      navigation.navigate('DemoScreen', { item });
+    }
+  }, [navigate]);
 
   return (
     <View style={appStyles.container}>
