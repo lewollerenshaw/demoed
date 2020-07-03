@@ -31,7 +31,7 @@ const listStyles = StyleSheet.create({
   },
   itemSecondaryRow: {
     padding: 0,
-    paddingBottom: 10,
+    paddingTop: 4,
   },
   deleteButton: {
     width: 75,

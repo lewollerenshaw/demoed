@@ -2,6 +2,7 @@ import * as React from 'react';
 import {
   Text, View, FlatList, TouchableOpacity, TextInput, AsyncStorage, Modal,
 } from 'react-native';
+import { RectButton } from 'react-native-gesture-handler'
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import {
   faCompactDisc, faTrash, faTimes,
@@ -158,51 +159,56 @@ function RecentlyDeletedScreen() {
               {/* RECORDING */}
               {item.associatedDemo
                 && (
-                  <TouchableOpacity
+
+                  <RectButton
                     style={listStyles.item}
                     onPress={() => triggerRecordingRestoration(item)}
                   >
-                    <View style={listStyles.itemPrimaryColumn}>
-                      <Text
-                        style={listStyles.itemHeader}
-                      >
-                        {item.recording.title}
-                      </Text>
-                      <View style={listStyles.itemAssociatedInfo}>
-                        <Text style={listStyles.itemDate}>{`${formatDate(item.recording.dateCreated)}`}</Text>
-                        <Text style={listStyles.itemType}>
-                          {` - from ${getDemoTitle(item.associatedDemo)}`}
+                    <View style={listStyles.itemPrimaryRow}>
+                      <View style={listStyles.itemPrimaryColumn}>
+                        <Text
+                          style={listStyles.itemHeader}
+                        >
+                          {item.recording.title}
                         </Text>
+                        <View style={listStyles.itemAssociatedInfo}>
+                          <Text style={listStyles.itemDate}>{`${formatDate(item.recording.dateCreated)}`}</Text>
+                          <Text style={listStyles.itemType}>
+                            {` - from ${getDemoTitle(item.associatedDemo)}`}
+                          </Text>
+                        </View>
+                      </View>
+
+                      <View style={listStyles.itemSecondaryColumn}>
+                        <Text style={listStyles.itemRecordingDuration}>{item.recording.duration}</Text>
                       </View>
                     </View>
-
-                    <View style={listStyles.itemSecondaryColumn}>
-                      <Text style={listStyles.itemRecordingDuration}>{item.recording.duration}</Text>
-                    </View>
-                  </TouchableOpacity>
+                  </RectButton>
                 )}
 
               {/* DEMO */}
               {item.demo
                 && (
-                  <TouchableOpacity
+                  <RectButton
                     style={listStyles.item}
                     onPress={() => restoreDemo(item)}
                   >
-                    <View style={listStyles.itemPrimaryColumn}>
-                      <TextInput
-                        style={listStyles.itemHeader}
-                      >
-                        {item.demo.title}
-                      </TextInput>
-                      <Text style={listStyles.itemDate}>{formatDate(item.demo.dateCreated)}</Text>
-                    </View>
+                    <View style={listStyles.itemPrimaryRow}>
+                      <View style={listStyles.itemPrimaryColumn}>
+                        <TextInput
+                          style={listStyles.itemHeader}
+                        >
+                          {item.demo.title}
+                        </TextInput>
+                        <Text style={listStyles.itemDate}>{formatDate(item.demo.dateCreated)}</Text>
+                      </View>
 
-                    <View style={listStyles.itemSecondaryColumn}>
-                      <FontAwesomeIcon style={listStyles.itemIcon} icon={faCompactDisc} />
-                      <Text style={listStyles.itemRecordingCount}>{item.demo.recordings.length}</Text>
+                      <View style={listStyles.itemSecondaryColumn}>
+                        <FontAwesomeIcon style={listStyles.itemIcon} icon={faCompactDisc} />
+                        <Text style={listStyles.itemRecordingCount}>{item.demo.recordings.length}</Text>
+                      </View>
                     </View>
-                  </TouchableOpacity>
+                  </RectButton>
                 )}
 
             </Swipeable>

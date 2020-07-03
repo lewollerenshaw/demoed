@@ -98,8 +98,10 @@ function mediaplayer({ open, rec }) {
   }
 
   async function handleValueChange(value) {
-    playbackInstance.pauseAsync();
-    playbackInstance.setPositionAsync(value);
+    if (playbackInstance !== null) {
+      playbackInstance.pauseAsync();
+      playbackInstance.setPositionAsync(value);
+    }
   }
 
   return (

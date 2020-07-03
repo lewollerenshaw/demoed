@@ -8,6 +8,8 @@ const mediaplayerStyles = StyleSheet.create({
     marginBottom: 10,
   },
   itemActions: {
+    marginTop: 10,
+    marginBottom: 4,
     flexDirection: 'row',
     justifyContent: 'space-between',
     paddingHorizontal: 10,

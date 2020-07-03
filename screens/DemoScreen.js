@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faTrash, faShare } from '@fortawesome/free-solid-svg-icons';
 import * as Sharing from 'expo-sharing';
+import { useNavigation } from '@react-navigation/native';
 import { addRecordingToBin } from '../redux/actions/binActions';
 import { updateDemo } from '../redux/actions/demoActions';
 import { setCurrentDemoId } from '../redux/actions/globalActions';
@@ -29,6 +30,7 @@ if (
 }
 
 function DemoScreen(_demo) {
+  const navigation = useNavigation();
   const [demo, setDemo] = React.useState(_demo.route.params.item);
   const demos = useSelector((state) => state.demos);
   const [list, setList] = React.useState(demo.recordings);
@@ -108,7 +110,7 @@ function DemoScreen(_demo) {
   const toggleMediaplayer = (id) => {
     setCurrentRecordingId(id);
     setOpen((prev) => !prev);
-    LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
   };
 
   const handleShare = async (recording) => {
@@ -127,12 +129,17 @@ function DemoScreen(_demo) {
     <View style={appStyles.container}>
       <View style={appStyles.body}>
         <View style={appStyles.headerContainer}>
-          <TextInput
-            style={appStyles.heading}
-            onChangeText={(value) => updateDemoName(value)}
-          >
-            {demo.title}
-          </TextInput>
+          <View style={appStyles.headingRow}>
+            <TextInput
+              style={appStyles.heading}
+              onChangeText={(value) => updateDemoName(value)}
+            >
+              {demo.title}
+            </TextInput>
+            <TouchableOpacity style={appStyles.recentlyDeleted} onPress={() => navigation.navigate('RecentlyDeletedScreen')}>
+              <FontAwesomeIcon style={appStyles.recentlyDeletedIcon} size={20} icon={faTrash} />
+            </TouchableOpacity>
+          </View>
           <TextInput
             style={searchStyles.input}
             onChangeText={(text) => updateSearchResults(text.toLowerCase())}
@@ -149,6 +156,9 @@ function DemoScreen(_demo) {
               style={listStyles.item}
               onPress={() => toggleMediaplayer(item.id)}
             >
+
+
+
               <View style={listStyles.itemPrimaryRow}>
                 <View style={listStyles.itemPrimaryColumn}>
                   <TextInput
@@ -167,24 +177,24 @@ function DemoScreen(_demo) {
                   <Text style={listStyles.itemRecordingDuration}>{millisToMinutesAndSeconds(item.duration)}</Text>
                 </View>
               </View>
-
+              <View style={mediaplayerStyles.itemActions}>
+                <TouchableOpacity
+                  onPress={() => handleShare(item)}
+                >
+                  <FontAwesomeIcon size={20} icon={faShare} />
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => deleteItem(item)}
+                >
+                  <FontAwesomeIcon size={20} icon={faTrash} />
+                </TouchableOpacity>
+              </View>
               {open && currentRecordingId === item.id && (
                 <View style={listStyles.itemSecondaryRow}>
                   <Mediaplayer open={open} rec={item} />
-                  <View style={mediaplayerStyles.itemActions}>
-                    <TouchableOpacity
-                      onPress={() => handleShare(item)}
-                    >
-                      <FontAwesomeIcon size={20} icon={faShare} />
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                      onPress={() => deleteItem(item)}
-                    >
-                      <FontAwesomeIcon size={20} icon={faTrash} />
-                    </TouchableOpacity>
-                  </View>
                 </View>
               )}
+
             </TouchableOpacity>
           )}
           keyExtractor={(_item, index) => index.toString()}
