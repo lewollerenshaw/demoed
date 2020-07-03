@@ -119,7 +119,7 @@ function DemoCollectionScreen() {
               leftThreshold={80}
             >
               <TouchableOpacity
-                style={listStyles.item}
+                style={[listStyles.item, listStyles.collectionItem]}
                 onPress={() => navigation.navigate('DemoScreen', { item })}
               >
                 <View style={listStyles.itemPrimaryColumn}>

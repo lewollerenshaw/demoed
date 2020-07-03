@@ -19,7 +19,6 @@ function mediaplayer({ open, rec }) {
   const [durationSecs, setDurationSecs] = React.useState(null);
   const [isBuffering, setIsBuffering] = React.useState(false);
   const [isSeeking, setIsSeeking] = React.useState(false);
-  const height = open === true ? 'auto' : 0;
   let soundObj;
 
   async function callBack(status) {
@@ -29,7 +28,7 @@ function mediaplayer({ open, rec }) {
     } else if (status.isLoaded) {
       setPosition(isSeeking ? position : status.positionMillis);
       setPositionSecs(
-        millisToMinutesAndSeconds(isSeeking ? position : status.positionMillis)
+        millisToMinutesAndSeconds(isSeeking ? position : status.positionMillis),
       );
       setIsPlaying(isSeeking || isBuffering ? isPlaying : status.isPlaying);
       setDuration(status.durationMillis);
@@ -104,7 +103,7 @@ function mediaplayer({ open, rec }) {
   }
 
   return (
-    <View style={[mediaplayerStyles.container, { height }]}>
+    <View style={mediaplayerStyles.container}>
       <Slider
         value={position}
         onValueChange={(val) => handleValueChange(val)}
@@ -114,12 +113,12 @@ function mediaplayer({ open, rec }) {
         thumbTintColor={Colors.$primary}
         minimumTrackTintColor={Colors.$primary}
       />
-      <View>
+      <View style={mediaplayerStyles.mediaActions}>
         <Text>
           {positionSecs && positionSecs}
         </Text>
         <TouchableOpacity onPress={() => handlePress()}>
-          <FontAwesomeIcon icon={paused ? faPlay : faPause} />
+          <FontAwesomeIcon size={22} icon={paused ? faPlay : faPause} />
         </TouchableOpacity>
         <Text>
           {durationSecs && durationSecs}
