@@ -2,14 +2,18 @@ import React from 'react';
 import * as FileSystem from 'expo-file-system';
 import { Audio } from 'expo-av';
 import {
-  View, Text, TouchableWithoutFeedback, AsyncStorage,
+  View, TouchableWithoutFeedback, AsyncStorage,
 } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
+import { faMicrophone, faStop } from '@fortawesome/free-solid-svg-icons';
 import { addDemo, addRecording } from '../redux/actions/demoActions';
 import { shouldNavigate } from '../redux/actions/globalActions';
 import Demo from '../models/demo';
 import Recording from '../models/recording';
 import { idGenerator } from '../utils/helpers';
+import recordStyles from '../styles/record';
+import { RectButton } from 'react-native-gesture-handler';
 
 function record() {
   const [permissions, setPermissions] = React.useState();
@@ -139,25 +143,10 @@ function record() {
   }, [currentDemoId]);
 
   return (
-    <View>
-      <View style={{
-        width: '100%',
-        height: 40,
-        border: 'solid',
-        borderWidth: 1,
-        borderColor: 'black',
-        justifyContent: 'center',
-      }}
-      >
-        <TouchableWithoutFeedback onPress={() => handleRecordingPress()}>
-          <Text style={{
-            alignSelf: 'center',
-          }}
-          >
-            {isRecording ? 'Stop' : 'Record'}
-          </Text>
-        </TouchableWithoutFeedback>
-      </View>
+    <View style={recordStyles.container}>
+      <RectButton style={recordStyles.recordContainer} onPress={() => handleRecordingPress()}>
+        <FontAwesomeIcon style={recordStyles.recordButtonIcon} size={32} icon={isRecording ? faStop : faMicrophone} />
+      </RectButton>
     </View>
   );
 }
