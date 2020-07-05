@@ -2,7 +2,7 @@ import * as React from 'react';
 import {
   Text, View, FlatList, TouchableOpacity, TextInput, AsyncStorage, Modal,
 } from 'react-native';
-import { RectButton } from 'react-native-gesture-handler'
+import { RectButton } from 'react-native-gesture-handler';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import {
   faCompactDisc, faTrash, faTimes,

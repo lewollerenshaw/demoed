@@ -9,7 +9,7 @@ import mediaplayerStyles from '../styles/mediaplayer';
 import { Colors } from '../styles/colors';
 import { millisToMinutesAndSeconds } from '../utils/helpers';
 
-function mediaplayer({ open, rec }) {
+function mediaplayer({ rec }) {
   const [playbackInstance, setPlaybackInstance] = React.useState(null);
   const [paused, setPaused] = React.useState(true);
   const [position, setPosition] = React.useState(null);
@@ -106,6 +106,17 @@ function mediaplayer({ open, rec }) {
 
   return (
     <View style={mediaplayerStyles.container}>
+      <View style={mediaplayerStyles.mediaActions}>
+        <Text>
+          {positionSecs && positionSecs}
+        </Text>
+        <TouchableOpacity onPress={() => handlePress()}>
+          <FontAwesomeIcon style={{ color: Colors.$info }} size={22} icon={paused ? faPlay : faPause} />
+        </TouchableOpacity>
+        <Text>
+          {durationSecs && durationSecs}
+        </Text>
+      </View>
       <Slider
         value={position}
         onValueChange={(val) => handleValueChange(val)}
@@ -115,17 +126,6 @@ function mediaplayer({ open, rec }) {
         thumbTintColor={Colors.$primary}
         minimumTrackTintColor={Colors.$primary}
       />
-      <View style={mediaplayerStyles.mediaActions}>
-        <Text>
-          {positionSecs && positionSecs}
-        </Text>
-        <TouchableOpacity onPress={() => handlePress()}>
-          <FontAwesomeIcon size={22} icon={paused ? faPlay : faPause} />
-        </TouchableOpacity>
-        <Text>
-          {durationSecs && durationSecs}
-        </Text>
-      </View>
     </View>
   );
 }

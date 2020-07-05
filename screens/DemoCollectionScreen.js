@@ -3,7 +3,7 @@ import { useNavigation } from '@react-navigation/native';
 import {
   Text, View, FlatList, TouchableOpacity, TextInput, AsyncStorage,
 } from 'react-native';
-import { RectButton } from 'react-native-gesture-handler'
+import { RectButton } from 'react-native-gesture-handler';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faCompactDisc, faTrash } from '@fortawesome/free-solid-svg-icons';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
@@ -21,7 +21,7 @@ import { STORAGE_KEY, BIN_STORAGE_KEY } from '../redux/storageKeys';
 
 function DemoCollectionScreen() {
   const demos = useSelector((state) => state.demos);
-  const navigate = useSelector((state) => state.global.navigate)
+  const navigate = useSelector((state) => state.global.navigate);
   const navigation = useNavigation();
   const dispatch = useDispatch();
   const [list, setList] = React.useState([]);

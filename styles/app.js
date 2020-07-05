@@ -33,8 +33,7 @@ const appStyles = StyleSheet.create({
     paddingRight: 10,
   },
   recentlyDeletedIcon: {
-    color: Colors.$info,
-    opacity: 0.8,
+    color: Colors.$n8,
   },
   headerInteraction: {
     justifyContent: 'center',

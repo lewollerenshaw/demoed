@@ -115,6 +115,7 @@ function DemoScreen(_demo) {
 
   const handleShare = async (recording) => {
     if (!(await Sharing.isAvailableAsync())) {
+      // eslint-disable-next-line no-alert
       alert('Uh oh, sharing isn\'t available on your platform');
       return;
     }
@@ -156,9 +157,6 @@ function DemoScreen(_demo) {
               style={listStyles.item}
               onPress={() => toggleMediaplayer(item.id)}
             >
-
-
-
               <View style={listStyles.itemPrimaryRow}>
                 <View style={listStyles.itemPrimaryColumn}>
                   <TextInput
@@ -173,28 +171,31 @@ function DemoScreen(_demo) {
                   </Text>
                 </View>
 
-                <View style={listStyles.itemSecondaryColumn}>
-                  <Text style={listStyles.itemRecordingDuration}>{millisToMinutesAndSeconds(item.duration)}</Text>
-                </View>
+                {!open && currentRecordingId === item.id && (
+                  <View style={listStyles.itemSecondaryColumn}>
+                    <Text style={listStyles.itemRecordingDuration}>{millisToMinutesAndSeconds(item.duration)}</Text>
+                  </View>
+                )}
               </View>
-              <View style={mediaplayerStyles.itemActions}>
-                <TouchableOpacity
-                  onPress={() => handleShare(item)}
-                >
-                  <FontAwesomeIcon size={20} icon={faShare} />
-                </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={() => deleteItem(item)}
-                >
-                  <FontAwesomeIcon size={20} icon={faTrash} />
-                </TouchableOpacity>
-              </View>
+
               {open && currentRecordingId === item.id && (
                 <View style={listStyles.itemSecondaryRow}>
                   <Mediaplayer open={open} rec={item} />
                 </View>
               )}
 
+              <View style={mediaplayerStyles.itemActions}>
+                <TouchableOpacity
+                  onPress={() => handleShare(item)}
+                >
+                  <FontAwesomeIcon style={{ color: Colors.$n8 }} size={20} icon={faShare} />
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => deleteItem(item)}
+                >
+                  <FontAwesomeIcon style={{ color: Colors.$n8 }} size={20} icon={faTrash} />
+                </TouchableOpacity>
+              </View>
             </TouchableOpacity>
           )}
           keyExtractor={(_item, index) => index.toString()}

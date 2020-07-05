@@ -27,14 +27,9 @@ function record() {
     setPermissions(response.granted);
   };
 
-  const recordingCallback = (status) => {
-    //console.log(status);
-  };
-
   const createRecordingInstance = () => {
     if (recordingInstance == null) {
       const newRecordingInstance = new Audio.Recording();
-      newRecordingInstance.setOnRecordingStatusUpdate(recordingCallback);
       newRecordingInstance.setProgressUpdateInterval(200);
       setRecordingInstance(newRecordingInstance);
     }
@@ -85,7 +80,7 @@ function record() {
 
     if (currentScreen === 'DemoCollectionScreen') {
       recording.title = 'Take 1';
-      const demoId = idGenerator()
+      const demoId = idGenerator();
       const demo = new Demo(
         demoId,
         `Demo ${demos.length + 1}`,

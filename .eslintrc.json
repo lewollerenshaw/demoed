@@ -24,6 +24,7 @@
         "linebreak-style": 0,
         "no-unused-expressions": "off",
         "max-len": "off",
-        "no-param-reassign": "off"
+        "no-param-reassign": "off",
+        "react/prop-types": "off"
     }
 }
