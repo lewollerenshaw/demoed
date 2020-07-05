@@ -1,3 +1,4 @@
+/* eslint-disable no-mixed-operators */
 import * as React from 'react';
 import {
   Text, View, FlatList, TouchableOpacity, TextInput, AsyncStorage, UIManager, Platform, LayoutAnimation,
@@ -171,11 +172,11 @@ function DemoScreen(_demo) {
                   </Text>
                 </View>
 
-                {!open && currentRecordingId === item.id && (
+                {(open && currentRecordingId !== item.id || !open) ? (
                   <View style={listStyles.itemSecondaryColumn}>
                     <Text style={listStyles.itemRecordingDuration}>{millisToMinutesAndSeconds(item.duration)}</Text>
                   </View>
-                )}
+                ) : null}
               </View>
 
               {open && currentRecordingId === item.id && (
