@@ -1,9 +1,18 @@
 import { StyleSheet } from 'react-native';
-import { Colors } from './colors';
 
 const mediaplayerStyles = StyleSheet.create({
-  container: {
-    // backgroundColor: 'red',
+  mediaActions: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: 10,
+    marginBottom: 10,
+  },
+  itemActions: {
+    marginTop: 10,
+    marginBottom: 4,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: 10,
   },
 });
 

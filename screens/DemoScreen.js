@@ -1,11 +1,13 @@
+/* eslint-disable no-mixed-operators */
 import * as React from 'react';
 import {
-  Text, View, FlatList, TouchableOpacity, TextInput, AsyncStorage, UIManager, Platform, LayoutAnimation, NativeModules,
+  Text, View, FlatList, TouchableOpacity, TextInput, AsyncStorage, UIManager, Platform, LayoutAnimation,
 } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faTrash, faShare } from '@fortawesome/free-solid-svg-icons';
 import * as Sharing from 'expo-sharing';
+import { useNavigation } from '@react-navigation/native';
 import { addRecordingToBin } from '../redux/actions/binActions';
 import { updateDemo } from '../redux/actions/demoActions';
 import { setCurrentDemoId } from '../redux/actions/globalActions';
@@ -14,11 +16,12 @@ import listStyles from '../styles/list';
 import { Colors } from '../styles/colors';
 import searchStyles from '../styles/search';
 import {
-  tagStringBuilder, formatDate, sortListByDate, hasSearchTextInTags, idGenerator,
+  tagStringBuilder, formatDate, sortListByDate, hasSearchTextInTags, idGenerator, millisToMinutesAndSeconds,
 } from '../utils/helpers';
 import DeletedRecording from '../models/deletedRecording';
 import Mediaplayer from '../components/mediaplayer';
 import { STORAGE_KEY, BIN_STORAGE_KEY } from '../redux/storageKeys';
+import mediaplayerStyles from '../styles/mediaplayer';
 
 if (
   Platform.OS === 'android'
@@ -28,6 +31,7 @@ if (
 }
 
 function DemoScreen(_demo) {
+  const navigation = useNavigation();
   const [demo, setDemo] = React.useState(_demo.route.params.item);
   const demos = useSelector((state) => state.demos);
   const [list, setList] = React.useState(demo.recordings);
@@ -107,11 +111,12 @@ function DemoScreen(_demo) {
   const toggleMediaplayer = (id) => {
     setCurrentRecordingId(id);
     setOpen((prev) => !prev);
-    LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
   };
 
   const handleShare = async (recording) => {
     if (!(await Sharing.isAvailableAsync())) {
+      // eslint-disable-next-line no-alert
       alert('Uh oh, sharing isn\'t available on your platform');
       return;
     }
@@ -126,12 +131,17 @@ function DemoScreen(_demo) {
     <View style={appStyles.container}>
       <View style={appStyles.body}>
         <View style={appStyles.headerContainer}>
-          <TextInput
-            style={appStyles.heading}
-            onChangeText={(value) => updateDemoName(value)}
-          >
-            {demo.title}
-          </TextInput>
+          <View style={appStyles.headingRow}>
+            <TextInput
+              style={appStyles.heading}
+              onChangeText={(value) => updateDemoName(value)}
+            >
+              {demo.title}
+            </TextInput>
+            <TouchableOpacity style={appStyles.recentlyDeleted} onPress={() => navigation.navigate('RecentlyDeletedScreen')}>
+              <FontAwesomeIcon style={appStyles.recentlyDeletedIcon} size={20} icon={faTrash} />
+            </TouchableOpacity>
+          </View>
           <TextInput
             style={searchStyles.input}
             onChangeText={(text) => updateSearchResults(text.toLowerCase())}
@@ -148,44 +158,45 @@ function DemoScreen(_demo) {
               style={listStyles.item}
               onPress={() => toggleMediaplayer(item.id)}
             >
+              <View style={listStyles.itemPrimaryRow}>
+                <View style={listStyles.itemPrimaryColumn}>
+                  <TextInput
+                    style={listStyles.itemHeader}
+                    onChangeText={(value) => updateRecordingName(item, value)}
+                  >
+                    {item.title}
+                  </TextInput>
+                  <Text style={listStyles.itemInfo}>
+                    {formatDate(item.dateCreated)}
+                    {item.tags.length > 0 && `- ${tagStringBuilder(item.tags)}`}
+                  </Text>
+                </View>
 
-              <View style={listStyles.itemPrimaryColumn}>
-                <TextInput
-                  style={listStyles.itemHeader}
-                  onChangeText={(value) => updateRecordingName(item, value)}
-                >
-                  {item.title}
-                </TextInput>
-                <Text style={listStyles.itemInfo}>
-                  {`${formatDate(item.dateCreated)}`}
-                  {item.tags.length > 0 && `- ${tagStringBuilder(item.tags)}`}
-                </Text>
+                {(open && currentRecordingId !== item.id || !open) ? (
+                  <View style={listStyles.itemSecondaryColumn}>
+                    <Text style={listStyles.itemRecordingDuration}>{millisToMinutesAndSeconds(item.duration)}</Text>
+                  </View>
+                ) : null}
               </View>
 
-              <View style={listStyles.itemSecondaryColumn}>
-                <Text style={listStyles.itemRecordingDuration}>{item.duration}</Text>
-              </View>
-              {open === true && (
-                <View>
-                  {currentRecordingId === item.id && (
-                    <View>
-                      <TouchableOpacity
-                        onPress={() => handleShare(item)}
-                      >
-                        <FontAwesomeIcon icon={faShare} />
-                      </TouchableOpacity>
-                      <Mediaplayer open={open} rec={item} />
-                      <TouchableOpacity
-                        // style={listStyles.deleteButton}
-                        onPress={() => deleteItem(item)}
-                      >
-                        <FontAwesomeIcon style={listStyles.deleteButtonIcon} icon={faTrash} />
-                      </TouchableOpacity>
-                    </View>
-                  )}
+              {open && currentRecordingId === item.id && (
+                <View style={listStyles.itemSecondaryRow}>
+                  <Mediaplayer open={open} rec={item} />
                 </View>
               )}
 
+              <View style={mediaplayerStyles.itemActions}>
+                <TouchableOpacity
+                  onPress={() => handleShare(item)}
+                >
+                  <FontAwesomeIcon style={{ color: Colors.$n8 }} size={20} icon={faShare} />
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => deleteItem(item)}
+                >
+                  <FontAwesomeIcon style={{ color: Colors.$n8 }} size={20} icon={faTrash} />
+                </TouchableOpacity>
+              </View>
             </TouchableOpacity>
           )}
           keyExtractor={(_item, index) => index.toString()}

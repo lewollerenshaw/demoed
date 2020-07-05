@@ -7,7 +7,6 @@ const listStyles = StyleSheet.create({
     paddingVertical: 10,
     borderBottomWidth: 1,
     borderBottomColor: Colors.$n2,
-    flexDirection: 'row',
     justifyContent: 'space-between',
     backgroundColor: Colors.$lightShade,
   },
@@ -26,6 +25,14 @@ const listStyles = StyleSheet.create({
     alignItems: 'center',
     paddingRight: 10,
   },
+  itemPrimaryRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  itemSecondaryRow: {
+    padding: 0,
+    paddingTop: 20,
+  },
   deleteButton: {
     width: 75,
     backgroundColor: Colors.$danger,
@@ -35,6 +42,9 @@ const listStyles = StyleSheet.create({
   deleteButtonIcon: { color: Colors.$lightShade },
 
   /* Demo Collection Screen Specific */
+  collectionItem: {
+    flexDirection: 'row',
+  },
   itemDate: {
     opacity: 0.6,
   },

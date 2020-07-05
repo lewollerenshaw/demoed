@@ -6,10 +6,10 @@ import {
 } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 import { addDemo, addRecording } from '../redux/actions/demoActions';
+import { shouldNavigate } from '../redux/actions/globalActions';
 import Demo from '../models/demo';
 import Recording from '../models/recording';
 import { idGenerator } from '../utils/helpers';
-import { BIN_STORAGE_KEY } from '../redux/storageKeys';
 
 function record() {
   const [permissions, setPermissions] = React.useState();
@@ -17,7 +17,6 @@ function record() {
   const [recordingInstance, setRecordingInstance] = React.useState(null);
   const currentScreen = useSelector((state) => state.global.currentScreen);
   const currentDemoId = useSelector((state) => state.global.currentDemoId);
-  const bin = useSelector((state) => state.bin);
   const demos = useSelector((state) => state.demos);
   const dispatch = useDispatch();
 
@@ -28,14 +27,9 @@ function record() {
     setPermissions(response.granted);
   };
 
-  const recordingCallback = (status) => {
-    //console.log(status);
-  };
-
   const createRecordingInstance = () => {
     if (recordingInstance == null) {
       const newRecordingInstance = new Audio.Recording();
-      newRecordingInstance.setOnRecordingStatusUpdate(recordingCallback);
       newRecordingInstance.setProgressUpdateInterval(200);
       setRecordingInstance(newRecordingInstance);
     }
@@ -86,9 +80,9 @@ function record() {
 
     if (currentScreen === 'DemoCollectionScreen') {
       recording.title = 'Take 1';
-
+      const demoId = idGenerator();
       const demo = new Demo(
-        idGenerator(),
+        demoId,
         `Demo ${demos.length + 1}`,
         [recording],
         new Date(),
@@ -101,6 +95,8 @@ function record() {
       storageData !== null ? storageData.push(demo) : storageData = [demo];
 
       await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(storageData));
+
+      dispatch(shouldNavigate({ shouldNav: true, demoId }));
     } else {
       // Set recording name
       const currentDemo = demos.filter((demo) => demo.id === currentDemoId);
@@ -142,25 +138,6 @@ function record() {
   React.useEffect(() => {
   }, [currentDemoId]);
 
-  // Debug functions
-  async function checkDemosInStorage() {
-    const response = await AsyncStorage.getItem(STORAGE_KEY);
-    console.log(response);
-  }
-
-  async function checkRecordingsInDirectory() {
-    const directory = await FileSystem.readDirectoryAsync(`${FileSystem.documentDirectory}recordings/`);
-    console.log(directory);
-  }
-
-  async function checkBinInLocalStorage() {
-    console.log(JSON.parse(await AsyncStorage.getItem(BIN_STORAGE_KEY)));
-  }
-
-  async function removeRecordingsFromDir() {
-    await FileSystem.deleteAsync(`${FileSystem.documentDirectory}recordings/`);
-  }
-
   return (
     <View>
       <View style={{
@@ -181,121 +158,6 @@ function record() {
           </Text>
         </TouchableWithoutFeedback>
       </View>
-
-      <View style={{
-        width: '100%',
-        height: 40,
-        border: 'solid',
-        borderWidth: 1,
-        borderColor: 'black',
-        justifyContent: 'center',
-      }}
-      >
-        <TouchableWithoutFeedback onPress={() => console.log(demos)}>
-          <Text style={{
-            alignSelf: 'center',
-          }}
-          >
-            Check demos in redux
-          </Text>
-        </TouchableWithoutFeedback>
-      </View>
-
-      <View style={{
-        width: '100%',
-        height: 40,
-        border: 'solid',
-        borderWidth: 1,
-        borderColor: 'black',
-        justifyContent: 'center',
-      }}
-      >
-        <TouchableWithoutFeedback onPress={() => checkDemosInStorage()}>
-          <Text style={{
-            alignSelf: 'center',
-          }}
-          >
-            Check demos in async storage
-          </Text>
-        </TouchableWithoutFeedback>
-      </View>
-
-      <View style={{
-        width: '100%',
-        height: 40,
-        border: 'solid',
-        borderWidth: 1,
-        borderColor: 'black',
-        justifyContent: 'center',
-      }}
-      >
-        <TouchableWithoutFeedback onPress={() => console.log(bin)}>
-          <Text style={{
-            alignSelf: 'center',
-          }}
-          >
-            Check bin in directory
-          </Text>
-        </TouchableWithoutFeedback>
-      </View>
-
-      <View style={{
-        width: '100%',
-        height: 40,
-        border: 'solid',
-        borderWidth: 1,
-        borderColor: 'black',
-        justifyContent: 'center',
-      }}
-      >
-        <TouchableWithoutFeedback onPress={() => checkBinInLocalStorage()}>
-          <Text style={{
-            alignSelf: 'center',
-          }}
-          >
-            Check bin in local storage
-          </Text>
-        </TouchableWithoutFeedback>
-      </View>
-
-      <View style={{
-        width: '100%',
-        height: 40,
-        border: 'solid',
-        borderWidth: 1,
-        borderColor: 'black',
-        justifyContent: 'center',
-      }}
-      >
-        <TouchableWithoutFeedback onPress={() => checkRecordingsInDirectory()}>
-          <Text style={{
-            alignSelf: 'center',
-          }}
-          >
-            Check recordings in directory
-          </Text>
-        </TouchableWithoutFeedback>
-      </View>
-
-      <View style={{
-        width: '100%',
-        height: 40,
-        border: 'solid',
-        borderWidth: 1,
-        borderColor: 'black',
-        justifyContent: 'center',
-      }}
-      >
-        <TouchableWithoutFeedback onPress={() => removeRecordingsFromDir()}>
-          <Text style={{
-            alignSelf: 'center',
-          }}
-          >
-            Remove recordings from directory
-          </Text>
-        </TouchableWithoutFeedback>
-      </View>
-
     </View>
   );
 }

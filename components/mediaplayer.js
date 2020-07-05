@@ -9,7 +9,7 @@ import mediaplayerStyles from '../styles/mediaplayer';
 import { Colors } from '../styles/colors';
 import { millisToMinutesAndSeconds } from '../utils/helpers';
 
-function mediaplayer({ open, rec }) {
+function mediaplayer({ rec }) {
   const [playbackInstance, setPlaybackInstance] = React.useState(null);
   const [paused, setPaused] = React.useState(true);
   const [position, setPosition] = React.useState(null);
@@ -19,7 +19,6 @@ function mediaplayer({ open, rec }) {
   const [durationSecs, setDurationSecs] = React.useState(null);
   const [isBuffering, setIsBuffering] = React.useState(false);
   const [isSeeking, setIsSeeking] = React.useState(false);
-  const height = open === true ? 'auto' : 0;
   let soundObj;
 
   async function callBack(status) {
@@ -29,7 +28,7 @@ function mediaplayer({ open, rec }) {
     } else if (status.isLoaded) {
       setPosition(isSeeking ? position : status.positionMillis);
       setPositionSecs(
-        millisToMinutesAndSeconds(isSeeking ? position : status.positionMillis)
+        millisToMinutesAndSeconds(isSeeking ? position : status.positionMillis),
       );
       setIsPlaying(isSeeking || isBuffering ? isPlaying : status.isPlaying);
       setDuration(status.durationMillis);
@@ -99,12 +98,25 @@ function mediaplayer({ open, rec }) {
   }
 
   async function handleValueChange(value) {
-    playbackInstance.pauseAsync();
-    playbackInstance.setPositionAsync(value);
+    if (playbackInstance !== null) {
+      playbackInstance.pauseAsync();
+      playbackInstance.setPositionAsync(value);
+    }
   }
 
   return (
-    <View style={[mediaplayerStyles.container, { height }]}>
+    <View style={mediaplayerStyles.container}>
+      <View style={mediaplayerStyles.mediaActions}>
+        <Text>
+          {positionSecs && positionSecs}
+        </Text>
+        <TouchableOpacity onPress={() => handlePress()}>
+          <FontAwesomeIcon style={{ color: Colors.$info }} size={22} icon={paused ? faPlay : faPause} />
+        </TouchableOpacity>
+        <Text>
+          {durationSecs && durationSecs}
+        </Text>
+      </View>
       <Slider
         value={position}
         onValueChange={(val) => handleValueChange(val)}
@@ -114,17 +126,6 @@ function mediaplayer({ open, rec }) {
         thumbTintColor={Colors.$primary}
         minimumTrackTintColor={Colors.$primary}
       />
-      <View>
-        <Text>
-          {positionSecs && positionSecs}
-        </Text>
-        <TouchableOpacity onPress={() => handlePress()}>
-          <FontAwesomeIcon icon={paused ? faPlay : faPause} />
-        </TouchableOpacity>
-        <Text>
-          {durationSecs && durationSecs}
-        </Text>
-      </View>
     </View>
   );
 }
