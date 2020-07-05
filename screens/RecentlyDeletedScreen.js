@@ -29,7 +29,9 @@ function RecentlyDeletedScreen() {
   const [isDeleteModalVisible, setDeleteModal] = React.useState(false);
   const [isDeleteAllModalVisible, setDeleteAllModal] = React.useState(false);
   const [isRestoreRecordingModalVisible, setRestoreRecordingModal] = React.useState(false);
+  const [isRestoreDemoModalVisible, setIsRestoreDemoModalVisible] = React.useState(false);
   const [recordingToRestore, setRecordingToRestore] = React.useState({});
+  const [demoToRestore, setDemoToRestore] = React.useState({});
   const [itemToDelete, setItemToDelete] = React.useState({});
 
   const getDemoTitle = (demoId) => {
@@ -103,6 +105,11 @@ function RecentlyDeletedScreen() {
   const triggerItemDeletion = (item) => {
     setItemToDelete(item);
     setDeleteModal(true);
+  };
+
+  const triggerRestoreDemo = (item) => {
+    setDemoToRestore(item);
+    setIsRestoreDemoModalVisible(true);
   };
 
   const triggerRecordingRestoration = (item) => {
@@ -201,7 +208,7 @@ function RecentlyDeletedScreen() {
                 && (
                   <RectButton
                     style={listStyles.item}
-                    onPress={() => restoreDemo(item)}
+                    onPress={() => triggerRestoreDemo(item)}
                   >
                     <View style={listStyles.itemPrimaryRow}>
                       <View style={listStyles.itemPrimaryColumn}>
@@ -309,23 +316,55 @@ function RecentlyDeletedScreen() {
                   style={listStyles.item}
                   onPress={() => restoreRecording(item)}
                 >
-                  <View style={listStyles.itemPrimaryColumn}>
-                    <Text
-                      style={listStyles.itemHeader}
-                    >
-                      {item.title}
-                    </Text>
-                    <Text style={listStyles.itemDate}>{formatDate(item.dateCreated)}</Text>
-                  </View>
+                  <View style={listStyles.itemPrimaryRow}>
+                    <View style={listStyles.itemPrimaryColumn}>
+                      <Text
+                        style={listStyles.itemHeader}
+                      >
+                        {item.title}
+                      </Text>
+                      <Text style={listStyles.itemDate}>{formatDate(item.dateCreated)}</Text>
+                    </View>
 
-                  <View style={listStyles.itemSecondaryColumn}>
-                    <FontAwesomeIcon style={listStyles.itemIcon} icon={faCompactDisc} />
-                    <Text style={listStyles.itemRecordingCount}>{item.recordings.length}</Text>
+                    <View style={listStyles.itemSecondaryColumn}>
+                      <FontAwesomeIcon style={listStyles.itemIcon} icon={faCompactDisc} />
+                      <Text style={listStyles.itemRecordingCount}>{item.recordings.length}</Text>
+                    </View>
                   </View>
                 </TouchableOpacity>
               )}
               keyExtractor={(_item, index) => index.toString()}
             />
+          </View>
+        </View>
+      </Modal>
+
+      {/* RESTORE DEMO MODAL */}
+      <Modal
+        visible={isRestoreDemoModalVisible}
+        transparent
+      >
+        <View style={modalStyles.container}>
+          <View style={modalStyles.content}>
+            <Text style={modalStyles.heading}>Restore demo</Text>
+            <Text style={modalStyles.bodyText}>
+              Do you want to restore this demo?
+            </Text>
+
+            <View style={modalStyles.actionContainer}>
+              <TouchableOpacity style={modalStyles.primaryAction} onPress={() => restoreDemo(demoToRestore)}>
+                <Text style={modalStyles.primaryActionText}>
+                  Yes, restore
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity style={modalStyles.secondaryAction} onPress={() => setIsRestoreDemoModalVisible(false)}>
+                <Text style={modalStyles.secondaryActionText}>
+                  No
+                </Text>
+              </TouchableOpacity>
+            </View>
+
           </View>
         </View>
       </Modal>
