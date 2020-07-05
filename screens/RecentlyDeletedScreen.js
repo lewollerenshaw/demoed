@@ -26,9 +26,13 @@ function RecentlyDeletedScreen() {
   const dispatch = useDispatch();
   const demos = useSelector((state) => state.demos);
   const [deletedItems, setDeletedItems] = React.useState(useSelector((state) => state.bin));
+  const [isDeleteModalVisible, setDeleteModal] = React.useState(false);
   const [isDeleteAllModalVisible, setDeleteAllModal] = React.useState(false);
   const [isRestoreRecordingModalVisible, setRestoreRecordingModal] = React.useState(false);
+  const [isRestoreDemoModalVisible, setIsRestoreDemoModalVisible] = React.useState(false);
   const [recordingToRestore, setRecordingToRestore] = React.useState({});
+  const [demoToRestore, setDemoToRestore] = React.useState({});
+  const [itemToDelete, setItemToDelete] = React.useState({});
 
   const getDemoTitle = (demoId) => {
     let title = '';
@@ -59,6 +63,9 @@ function RecentlyDeletedScreen() {
     // Update redux
     dispatch(deleteItemFromBin(item));
     setDeletedItems(updatedBin);
+
+    setDeleteModal(false);
+    if (updatedBin.length < 1) navigation.navigate('DemoCollectionScreen');
   };
 
   const deleteAllItems = async () => {
@@ -93,6 +100,16 @@ function RecentlyDeletedScreen() {
 
     // If nothing in bin, navigate back
     if (updatedBinStorage.length < 1) navigation.navigate('DemoCollectionScreen');
+  };
+
+  const triggerItemDeletion = (item) => {
+    setItemToDelete(item);
+    setDeleteModal(true);
+  };
+
+  const triggerRestoreDemo = (item) => {
+    setDemoToRestore(item);
+    setIsRestoreDemoModalVisible(true);
   };
 
   const triggerRecordingRestoration = (item) => {
@@ -147,7 +164,7 @@ function RecentlyDeletedScreen() {
               renderRightActions={() => (
                 <TouchableOpacity
                   style={listStyles.deleteButton}
-                  onPress={() => deleteItem(item)}
+                  onPress={() => triggerItemDeletion(item)}
                 >
                   <FontAwesomeIcon style={listStyles.deleteButtonIcon} icon={faTrash} />
                 </TouchableOpacity>
@@ -191,7 +208,7 @@ function RecentlyDeletedScreen() {
                 && (
                   <RectButton
                     style={listStyles.item}
-                    onPress={() => restoreDemo(item)}
+                    onPress={() => triggerRestoreDemo(item)}
                   >
                     <View style={listStyles.itemPrimaryRow}>
                       <View style={listStyles.itemPrimaryColumn}>
@@ -216,6 +233,36 @@ function RecentlyDeletedScreen() {
           keyExtractor={(_item, index) => index.toString()}
         />
       </View>
+
+      {/* DELETE MODAL */}
+      <Modal
+        visible={isDeleteModalVisible}
+        transparent
+      >
+        <View style={modalStyles.container}>
+          <View style={modalStyles.content}>
+            <Text style={modalStyles.heading}>Confirm deletion</Text>
+            <Text style={modalStyles.bodyText}>
+              Are you sure you want to delete this? There is no going back.
+            </Text>
+
+            <View style={modalStyles.actionContainer}>
+              <TouchableOpacity style={modalStyles.primaryAction} onPress={() => deleteItem(itemToDelete)}>
+                <Text style={modalStyles.primaryActionText}>
+                  Yes, delete
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity style={modalStyles.secondaryAction} onPress={() => setDeleteModal(false)}>
+                <Text style={modalStyles.secondaryActionText}>
+                  No
+                </Text>
+              </TouchableOpacity>
+            </View>
+
+          </View>
+        </View>
+      </Modal>
 
       {/* DELETE ALL MODAL */}
       <Modal
@@ -269,23 +316,55 @@ function RecentlyDeletedScreen() {
                   style={listStyles.item}
                   onPress={() => restoreRecording(item)}
                 >
-                  <View style={listStyles.itemPrimaryColumn}>
-                    <Text
-                      style={listStyles.itemHeader}
-                    >
-                      {item.title}
-                    </Text>
-                    <Text style={listStyles.itemDate}>{formatDate(item.dateCreated)}</Text>
-                  </View>
+                  <View style={listStyles.itemPrimaryRow}>
+                    <View style={listStyles.itemPrimaryColumn}>
+                      <Text
+                        style={listStyles.itemHeader}
+                      >
+                        {item.title}
+                      </Text>
+                      <Text style={listStyles.itemDate}>{formatDate(item.dateCreated)}</Text>
+                    </View>
 
-                  <View style={listStyles.itemSecondaryColumn}>
-                    <FontAwesomeIcon style={listStyles.itemIcon} icon={faCompactDisc} />
-                    <Text style={listStyles.itemRecordingCount}>{item.recordings.length}</Text>
+                    <View style={listStyles.itemSecondaryColumn}>
+                      <FontAwesomeIcon style={listStyles.itemIcon} icon={faCompactDisc} />
+                      <Text style={listStyles.itemRecordingCount}>{item.recordings.length}</Text>
+                    </View>
                   </View>
                 </TouchableOpacity>
               )}
               keyExtractor={(_item, index) => index.toString()}
             />
+          </View>
+        </View>
+      </Modal>
+
+      {/* RESTORE DEMO MODAL */}
+      <Modal
+        visible={isRestoreDemoModalVisible}
+        transparent
+      >
+        <View style={modalStyles.container}>
+          <View style={modalStyles.content}>
+            <Text style={modalStyles.heading}>Restore demo</Text>
+            <Text style={modalStyles.bodyText}>
+              Do you want to restore this demo?
+            </Text>
+
+            <View style={modalStyles.actionContainer}>
+              <TouchableOpacity style={modalStyles.primaryAction} onPress={() => restoreDemo(demoToRestore)}>
+                <Text style={modalStyles.primaryActionText}>
+                  Yes, restore
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity style={modalStyles.secondaryAction} onPress={() => setIsRestoreDemoModalVisible(false)}>
+                <Text style={modalStyles.secondaryActionText}>
+                  No
+                </Text>
+              </TouchableOpacity>
+            </View>
+
           </View>
         </View>
       </Modal>
