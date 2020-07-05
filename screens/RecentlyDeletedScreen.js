@@ -26,9 +26,11 @@ function RecentlyDeletedScreen() {
   const dispatch = useDispatch();
   const demos = useSelector((state) => state.demos);
   const [deletedItems, setDeletedItems] = React.useState(useSelector((state) => state.bin));
+  const [isDeleteModalVisible, setDeleteModal] = React.useState(false);
   const [isDeleteAllModalVisible, setDeleteAllModal] = React.useState(false);
   const [isRestoreRecordingModalVisible, setRestoreRecordingModal] = React.useState(false);
   const [recordingToRestore, setRecordingToRestore] = React.useState({});
+  const [itemToDelete, setItemToDelete] = React.useState({});
 
   const getDemoTitle = (demoId) => {
     let title = '';
@@ -59,6 +61,9 @@ function RecentlyDeletedScreen() {
     // Update redux
     dispatch(deleteItemFromBin(item));
     setDeletedItems(updatedBin);
+
+    setDeleteModal(false);
+    if (updatedBin.length < 1) navigation.navigate('DemoCollectionScreen');
   };
 
   const deleteAllItems = async () => {
@@ -93,6 +98,11 @@ function RecentlyDeletedScreen() {
 
     // If nothing in bin, navigate back
     if (updatedBinStorage.length < 1) navigation.navigate('DemoCollectionScreen');
+  };
+
+  const triggerItemDeletion = (item) => {
+    setItemToDelete(item);
+    setDeleteModal(true);
   };
 
   const triggerRecordingRestoration = (item) => {
@@ -147,7 +157,7 @@ function RecentlyDeletedScreen() {
               renderRightActions={() => (
                 <TouchableOpacity
                   style={listStyles.deleteButton}
-                  onPress={() => deleteItem(item)}
+                  onPress={() => triggerItemDeletion(item)}
                 >
                   <FontAwesomeIcon style={listStyles.deleteButtonIcon} icon={faTrash} />
                 </TouchableOpacity>
@@ -216,6 +226,36 @@ function RecentlyDeletedScreen() {
           keyExtractor={(_item, index) => index.toString()}
         />
       </View>
+
+      {/* DELETE MODAL */}
+      <Modal
+        visible={isDeleteModalVisible}
+        transparent
+      >
+        <View style={modalStyles.container}>
+          <View style={modalStyles.content}>
+            <Text style={modalStyles.heading}>Confirm deletion</Text>
+            <Text style={modalStyles.bodyText}>
+              Are you sure you want to delete this? There is no going back.
+            </Text>
+
+            <View style={modalStyles.actionContainer}>
+              <TouchableOpacity style={modalStyles.primaryAction} onPress={() => deleteItem(itemToDelete)}>
+                <Text style={modalStyles.primaryActionText}>
+                  Yes, delete
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity style={modalStyles.secondaryAction} onPress={() => setDeleteModal(false)}>
+                <Text style={modalStyles.secondaryActionText}>
+                  No
+                </Text>
+              </TouchableOpacity>
+            </View>
+
+          </View>
+        </View>
+      </Modal>
 
       {/* DELETE ALL MODAL */}
       <Modal
