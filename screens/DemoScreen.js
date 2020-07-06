@@ -182,21 +182,22 @@ function DemoScreen(_demo) {
               {open && currentRecordingId === item.id && (
                 <View style={listStyles.itemSecondaryRow}>
                   <Mediaplayer open={open} rec={item} />
+
+                  <View style={mediaplayerStyles.itemActions}>
+                    <TouchableOpacity
+                      onPress={() => handleShare(item)}
+                    >
+                      <FontAwesomeIcon style={{ color: Colors.$n8 }} size={20} icon={faShare} />
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      onPress={() => deleteItem(item)}
+                    >
+                      <FontAwesomeIcon style={{ color: Colors.$n8 }} size={20} icon={faTrash} />
+                    </TouchableOpacity>
+                  </View>
                 </View>
               )}
 
-              <View style={mediaplayerStyles.itemActions}>
-                <TouchableOpacity
-                  onPress={() => handleShare(item)}
-                >
-                  <FontAwesomeIcon style={{ color: Colors.$n8 }} size={20} icon={faShare} />
-                </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={() => deleteItem(item)}
-                >
-                  <FontAwesomeIcon style={{ color: Colors.$n8 }} size={20} icon={faTrash} />
-                </TouchableOpacity>
-              </View>
             </TouchableOpacity>
           )}
           keyExtractor={(_item, index) => index.toString()}
