@@ -59,6 +59,22 @@ const modalStyles = StyleSheet.create({
     fontSize: 16,
     color: Colors.$primary,
   },
+
+  /* Manage tag specific styles */
+  tagInputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: 10,
+  },
+  tagInput: {
+
+  },
+  tagInputButton: {
+  },
+  tagInputButtonIcon: {
+    color: Colors.$info,
+  },
 });
 
 export default modalStyles;

@@ -1,5 +1,6 @@
 export default {
   demos: [],
+  tags: [],
   bin: [],
   global: {
     darkMode: false,

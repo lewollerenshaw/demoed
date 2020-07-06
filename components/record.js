@@ -2,7 +2,7 @@ import React from 'react';
 import * as FileSystem from 'expo-file-system';
 import { Audio } from 'expo-av';
 import {
-  View, AsyncStorage,
+  View, AsyncStorage, Text, TouchableWithoutFeedback,
 } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
@@ -130,6 +130,10 @@ function record() {
     if (permissions) if (isRecording) stopRecording(); else createRecordingInstance();
   };
 
+  async function removeDemosFromStorage() {
+    await AsyncStorage.clear();
+  }
+
   React.useEffect(() => {
     getPermissions();
   }, []);
@@ -142,12 +146,31 @@ function record() {
   }, [currentDemoId]);
 
   return (
-    <View style={recordStyles.container}>
+    <View style={recordStyles.container}><View style={{
+        width: '100%',
+        height: 40,
+        border: 'solid',
+        borderWidth: 1,
+        borderColor: 'black',
+        justifyContent: 'center',
+      }}
+      >
+        <TouchableWithoutFeedback onPress={() => removeDemosFromStorage()}>
+          <Text style={{
+            alignSelf: 'center',
+          }}
+          >
+            Remove demos in local storage
+          </Text>
+        </TouchableWithoutFeedback>
+      </View>
       <View style={recordStyles.recordContainer}>
         <RectButton style={recordStyles.recordButtonContainer} onPress={() => handleRecordingPress()}>
           <FontAwesomeIcon style={recordStyles.recordButtonIcon} size={24} icon={isRecording ? faStop : faMicrophone} />
         </RectButton>
       </View>
+
+      
     </View>
   );
 }
