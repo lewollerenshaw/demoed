@@ -2,14 +2,19 @@ import React from 'react';
 import * as FileSystem from 'expo-file-system';
 import { Audio } from 'expo-av';
 import {
-  View, Text, TouchableWithoutFeedback, AsyncStorage,
+  View, AsyncStorage,
 } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
+import { faMicrophone, faStop } from '@fortawesome/free-solid-svg-icons';
+import { RectButton } from 'react-native-gesture-handler';
 import { addDemo, addRecording } from '../redux/actions/demoActions';
 import { shouldNavigate } from '../redux/actions/globalActions';
 import Demo from '../models/demo';
 import Recording from '../models/recording';
 import { idGenerator } from '../utils/helpers';
+import recordStyles from '../styles/record';
+import { STORAGE_KEY } from '../redux/storageKeys';
 
 function record() {
   const [permissions, setPermissions] = React.useState();
@@ -19,8 +24,6 @@ function record() {
   const currentDemoId = useSelector((state) => state.global.currentDemoId);
   const demos = useSelector((state) => state.demos);
   const dispatch = useDispatch();
-
-  const STORAGE_KEY = 'demos: demo';
 
   const getPermissions = async () => {
     const response = await Audio.requestPermissionsAsync();
@@ -139,24 +142,11 @@ function record() {
   }, [currentDemoId]);
 
   return (
-    <View>
-      <View style={{
-        width: '100%',
-        height: 40,
-        border: 'solid',
-        borderWidth: 1,
-        borderColor: 'black',
-        justifyContent: 'center',
-      }}
-      >
-        <TouchableWithoutFeedback onPress={() => handleRecordingPress()}>
-          <Text style={{
-            alignSelf: 'center',
-          }}
-          >
-            {isRecording ? 'Stop' : 'Record'}
-          </Text>
-        </TouchableWithoutFeedback>
+    <View style={recordStyles.container}>
+      <View style={recordStyles.recordContainer}>
+        <RectButton style={recordStyles.recordButtonContainer} onPress={() => handleRecordingPress()}>
+          <FontAwesomeIcon style={recordStyles.recordButtonIcon} size={24} icon={isRecording ? faStop : faMicrophone} />
+        </RectButton>
       </View>
     </View>
   );
