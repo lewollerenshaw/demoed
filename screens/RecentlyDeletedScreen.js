@@ -15,7 +15,7 @@ import listStyles from '../styles/list';
 import appStyles from '../styles/app';
 import searchStyles from '../styles/search';
 import { Colors } from '../styles/colors';
-import { formatDate, sortListByDate } from '../utils/helpers';
+import { formatDate, sortListByDate, millisToMinutesAndSeconds } from '../utils/helpers';
 import { BIN_STORAGE_KEY, STORAGE_KEY } from '../redux/storageKeys';
 import { deleteItemFromBin, deleteAll, setBin } from '../redux/actions/binActions';
 import { addDemo, addRecording } from '../redux/actions/demoActions';
@@ -197,7 +197,7 @@ function RecentlyDeletedScreen() {
                       </View>
 
                       <View style={listStyles.itemSecondaryColumn}>
-                        <Text style={listStyles.itemRecordingDuration}>{item.recording.duration}</Text>
+                        <Text style={listStyles.itemRecordingDuration}>{millisToMinutesAndSeconds(item.recording.duration)}</Text>
                       </View>
                     </View>
                   </RectButton>
@@ -259,7 +259,6 @@ function RecentlyDeletedScreen() {
                 </Text>
               </TouchableOpacity>
             </View>
-
           </View>
         </View>
       </Modal>
