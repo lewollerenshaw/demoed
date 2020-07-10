@@ -2,7 +2,7 @@ import React from 'react';
 import * as FileSystem from 'expo-file-system';
 import { Audio } from 'expo-av';
 import {
-  View, AsyncStorage,
+  View, AsyncStorage, Text,
 } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';

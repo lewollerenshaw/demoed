@@ -1,7 +1,7 @@
 /* eslint-disable no-mixed-operators */
 import * as React from 'react';
 import {
-  Text, View, FlatList, TouchableOpacity, TextInput, AsyncStorage, UIManager, Platform, LayoutAnimation,
+  Text, View, FlatList, TouchableOpacity, TextInput, AsyncStorage, UIManager, Platform, LayoutAnimation, Modal,
 } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
@@ -22,6 +22,7 @@ import DeletedRecording from '../models/deletedRecording';
 import Mediaplayer from '../components/mediaplayer';
 import { STORAGE_KEY, BIN_STORAGE_KEY } from '../redux/storageKeys';
 import mediaplayerStyles from '../styles/mediaplayer';
+import modalStyles from '../styles/modal';
 
 if (
   Platform.OS === 'android'
@@ -37,6 +38,8 @@ function DemoScreen(_demo) {
   const [list, setList] = React.useState(demo.recordings);
   const [open, setOpen] = React.useState(false);
   const [currentRecordingId, setCurrentRecordingId] = React.useState();
+  const [isDeleteModalVisible, setDeleteModal] = React.useState(false);
+  const [itemToDelete, setItemToDelete] = React.useState({});
   const dispatch = useDispatch();
 
   const updateSearchResults = (search) => {
@@ -86,6 +89,7 @@ function DemoScreen(_demo) {
     dispatch(updateDemo(demo));
     dispatch(addRecordingToBin(del));
     setList(demo.recordings);
+    setDeleteModal(false);
   };
 
   const updateRecordingName = async (recording, newTitle) => {
@@ -121,6 +125,11 @@ function DemoScreen(_demo) {
       return;
     }
     Sharing.shareAsync(recording.URI);
+  };
+
+  const triggerItemDeletion = (item) => {
+    setItemToDelete(item);
+    setDeleteModal(true);
   };
 
   React.useEffect(() => {
@@ -190,7 +199,7 @@ function DemoScreen(_demo) {
                       <FontAwesomeIcon style={{ color: Colors.$n8 }} size={20} icon={faShare} />
                     </TouchableOpacity>
                     <TouchableOpacity
-                      onPress={() => deleteItem(item)}
+                      onPress={() => triggerItemDeletion(item)}
                     >
                       <FontAwesomeIcon style={{ color: Colors.$n8 }} size={20} icon={faTrash} />
                     </TouchableOpacity>
@@ -203,6 +212,35 @@ function DemoScreen(_demo) {
           keyExtractor={(_item, index) => index.toString()}
         />
       </View>
+
+      {/* DELETE MODAL */}
+      <Modal
+        visible={isDeleteModalVisible}
+        transparent
+      >
+        <View style={modalStyles.container}>
+          <View style={modalStyles.content}>
+            <Text style={modalStyles.heading}>Confirm deletion</Text>
+            <Text style={modalStyles.bodyText}>
+              Are you sure you want to delete this?
+            </Text>
+
+            <View style={modalStyles.actionContainer}>
+              <TouchableOpacity style={modalStyles.primaryAction} onPress={() => deleteItem(itemToDelete)}>
+                <Text style={modalStyles.primaryActionText}>
+                  Yes, delete
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity style={modalStyles.secondaryAction} onPress={() => setDeleteModal(false)}>
+                <Text style={modalStyles.secondaryActionText}>
+                  No
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
