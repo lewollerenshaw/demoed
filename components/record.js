@@ -146,7 +146,8 @@ function record() {
   }, [currentDemoId]);
 
   return (
-    <View style={recordStyles.container}><View style={{
+    <View style={recordStyles.container}>
+      <View style={{
         width: '100%',
         height: 40,
         border: 'solid',
@@ -169,8 +170,6 @@ function record() {
           <FontAwesomeIcon style={recordStyles.recordButtonIcon} size={24} icon={isRecording ? faStop : faMicrophone} />
         </RectButton>
       </View>
-
-      
     </View>
   );
 }

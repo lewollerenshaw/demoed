@@ -9,7 +9,9 @@ export default function tagReducer(state = initialState.tags, action) {
     case SET_TAGS:
       return action.bin;
     case ADD_TAG:
-      return state.push(action.tag);
+      // Big error if return state.push(action.tag) instead of this
+      state.push(action.tag);
+      return state;
     default:
       return state;
   }

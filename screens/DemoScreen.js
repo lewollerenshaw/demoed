@@ -111,31 +111,21 @@ function DemoScreen(_demo) {
 
   const updateRecordingTags = async (tag) => {
     const updatedRecordings = demo.recordings.filter((item) => item.id !== recordingToUpdate.id);
-    console.log('updaterecordings');
-    console.log(updatedRecordings);
 
-    recordingToUpdate.tags.includes(tag)
-      ? recordingToUpdate.tags = recordingToUpdate.tags.filter((t) => t !== tag)
-      : recordingToUpdate.tags.push(tag);
+    recordingToUpdate.tags.includes(createTagText)
+      ? recordingToUpdate.tags = recordingToUpdate.tags.filter((t) => t !== createTagText)
+      : recordingToUpdate.tags.push(createTagText);
 
     updatedRecordings.push(recordingToUpdate);
     demo.recordings = updatedRecordings;
-
-    console.log('updated demo recordings');
-    console.log(demo.recordings);
 
     // Update demo with recording with new tags
     dispatch(updateDemo(demo));
     await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(demos));
 
-    console.log('demos');
-    console.log(demos);
-
     // Add new tag to redux/local storage
-    if (!tags.includes(tag)) {
-      console.log('tag not in store yet');
-
-      dispatch(addTag(tag));
+    if (!tags.includes(createTagText)) {
+      dispatch(addTag(createTagText));
 
       await AsyncStorage.setItem(TAG_STORAGE_KEY, JSON.stringify(tags));
     }
@@ -270,19 +260,19 @@ function DemoScreen(_demo) {
             <Text style={modalStyles.bodyText}>
               Select tags to add to the recording
             </Text>
-
+            {console.log("TAGS", tags)}
             <FlatList
               data={tags}
               ListFooterComponent={(
                 <View style={modalStyles.tagInputContainer}>
                   <TextInput
                     style={modalStyles.tagInput}
-                    onEndEditing={(text) => setCreateTagText(text)}
+                    onChangeText={(text) => setCreateTagText(text)}
                     placeholder="Create a tag..."
                   />
                   <TouchableOpacity
                     style={modalStyles.tagInputButton}
-                    onPress={updateRecordingTags(createTagText)}
+                    onPress={() => updateRecordingTags()}
                   >
                     <FontAwesomeIcon style={modalStyles.tagInputButtonIcon} icon={faPlus}> </FontAwesomeIcon>
                   </TouchableOpacity>
@@ -293,7 +283,7 @@ function DemoScreen(_demo) {
                 <View>
                   <TouchableOpacity
                     style={listStyles.item}
-                    onPress={() => updateRecordingTags(item)}
+                  //onPress={() => updateRecordingTags(item)}
                   >
                     <View style={listStyles.itemPrimaryRow}>
                       <View style={listStyles.itemPrimaryColumn}>
