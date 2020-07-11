@@ -30,7 +30,7 @@ function DemoCollectionScreen() {
     const filter = [];
 
     if (search) {
-      list.forEach((element) => {
+      demos.forEach((element) => {
         const title = element.title.toLowerCase();
 
         if (title.includes(search)) filter.push(element);

@@ -51,7 +51,7 @@ function DemoScreen(_demo) {
     const filter = [];
 
     if (search) {
-      list.forEach((element) => {
+      demo.recordings.forEach((element) => {
         const title = element.title.toLowerCase();
         const recTags = element.tags.map((tag) => tag.toLowerCase());
 
@@ -59,7 +59,7 @@ function DemoScreen(_demo) {
       });
 
       setList(filter);
-    } else setList(list);
+    } else setList(demo.recordings);
   };
 
   const deleteItem = async (recording) => {
