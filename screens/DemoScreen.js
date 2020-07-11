@@ -5,7 +5,9 @@ import {
 } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faTrash, faShare } from '@fortawesome/free-solid-svg-icons';
+import {
+  faTrash, faShare, faTag, faTimes, faMinusCircle, faPlus,
+} from '@fortawesome/free-solid-svg-icons';
 import * as Sharing from 'expo-sharing';
 import { useNavigation } from '@react-navigation/native';
 import { addRecordingToBin } from '../redux/actions/binActions';
@@ -38,6 +40,9 @@ function DemoScreen(_demo) {
   const [list, setList] = React.useState(demo.recordings);
   const [open, setOpen] = React.useState(false);
   const [currentRecordingId, setCurrentRecordingId] = React.useState();
+  const [recordingToUpdate, setRecordingToUpdate] = React.useState({});
+  const [tagsModal, setTagModal] = React.useState(false);
+  const [createTagText, setCreateTagText] = React.useState(null);
   const [isDeleteModalVisible, setDeleteModal] = React.useState(false);
   const [itemToDelete, setItemToDelete] = React.useState({});
   const dispatch = useDispatch();
@@ -48,9 +53,9 @@ function DemoScreen(_demo) {
     if (search) {
       list.forEach((element) => {
         const title = element.title.toLowerCase();
-        const tags = element.tags.map((tag) => tag.toLowerCase());
+        const recTags = element.tags.map((tag) => tag.toLowerCase());
 
-        if (title.includes(search) || hasSearchTextInTags(search, tags)) filter.push(element);
+        if (title.includes(search) || hasSearchTextInTags(search, recTags)) filter.push(element);
       });
 
       setList(filter);
@@ -127,6 +132,42 @@ function DemoScreen(_demo) {
     Sharing.shareAsync(recording.URI);
   };
 
+  const addTagToRecording = async (tag) => {
+    if (tag.length) {
+      const updatedRecording = recordingToUpdate;
+      updatedRecording.tags.push(tag);
+
+      setRecordingToUpdate(updatedRecording);
+
+      const updatedRecordings = demo.recordings.filter((rec) => rec.id !== recordingToUpdate.id);
+
+      updatedRecordings.push(recordingToUpdate);
+
+      demo.recordings = updatedRecordings;
+
+      dispatch(updateDemo(demo));
+      setCreateTagText(null);
+      await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(demos));
+    }
+  };
+
+  const removeTagFromRecording = async (tag) => {
+    const updatedTags = recordingToUpdate.tags.filter((t) => t !== tag);
+    recordingToUpdate.tags = updatedTags;
+
+    const updatedRecordings = demo.recordings.filter((rec) => rec.id !== recordingToUpdate.id);
+    updatedRecordings.push(recordingToUpdate);
+
+    setRecordingToUpdate(recordingToUpdate);
+    dispatch(updateDemo(demo));
+    await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(demos));
+  };
+
+  const triggerTagsModal = (recording) => {
+    setTagModal(true);
+    setRecordingToUpdate(recording);
+  };
+
   const triggerItemDeletion = (item) => {
     setItemToDelete(item);
     setDeleteModal(true);
@@ -177,7 +218,7 @@ function DemoScreen(_demo) {
                   </TextInput>
                   <Text style={listStyles.itemInfo}>
                     {formatDate(item.dateCreated)}
-                    {item.tags.length > 0 && `- ${tagStringBuilder(item.tags)}`}
+                    {item.tags.length > 0 && ` - ${tagStringBuilder(item.tags)}`}
                   </Text>
                 </View>
 
@@ -197,6 +238,11 @@ function DemoScreen(_demo) {
                       onPress={() => handleShare(item)}
                     >
                       <FontAwesomeIcon style={{ color: Colors.$n8 }} size={20} icon={faShare} />
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      onPress={() => triggerTagsModal(item)}
+                    >
+                      <FontAwesomeIcon style={{ color: Colors.$n8 }} size={20} icon={faTag} />
                     </TouchableOpacity>
                     <TouchableOpacity
                       onPress={() => triggerItemDeletion(item)}
@@ -238,6 +284,66 @@ function DemoScreen(_demo) {
                 </Text>
               </TouchableOpacity>
             </View>
+          </View>
+        </View>
+      </Modal>
+
+      {/* MANAGE TAGS MODEL */}
+      <Modal
+        visible={tagsModal}
+        transparent
+      >
+        <View style={modalStyles.container}>
+          <View style={modalStyles.content}>
+            <View style={modalStyles.header}>
+              <Text style={modalStyles.heading}>Tags</Text>
+              <FontAwesomeIcon style={modalStyles.headingAction} onPress={() => setTagModal(false)} size={18} icon={faTimes} />
+            </View>
+            <Text style={modalStyles.bodyText}>
+              Select tags to add to the recording
+            </Text>
+            <FlatList
+              data={recordingToUpdate.tags}
+              ListFooterComponent={(
+                <View style={modalStyles.tagInputContainer}>
+                  <TextInput
+                    style={modalStyles.tagInput}
+                    value={createTagText}
+                    onSubmitEditing={() => addTagToRecording(createTagText)}
+                    onChangeText={(text) => setCreateTagText(text)}
+                    placeholder="Create a tag..."
+                  />
+                  <TouchableOpacity
+                    style={modalStyles.tagInputButton}
+                    onPress={() => addTagToRecording(createTagText)}
+                  >
+                    <FontAwesomeIcon style={modalStyles.tagInputButtonIcon} icon={faPlus}> </FontAwesomeIcon>
+                  </TouchableOpacity>
+                </View>
+              )}
+              renderItem={({ item }) => (
+                <View>
+                  <View
+                    style={listStyles.item}
+                  >
+                    <View style={listStyles.itemPrimaryRow}>
+                      <View style={listStyles.itemPrimaryColumn}>
+                        <Text
+                          style={listStyles.itemHeader}
+                        >
+                          {item}
+                        </Text>
+                      </View>
+
+                      <TouchableOpacity onPress={() => removeTagFromRecording(item)} style={listStyles.itemSecondaryColumn}>
+                        <FontAwesomeIcon style={listStyles.itemIcon} icon={faMinusCircle} />
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                </View>
+              )}
+              keyExtractor={(_item, index) => index.toString()}
+            />
           </View>
         </View>
       </Modal>
