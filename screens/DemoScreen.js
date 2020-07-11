@@ -6,13 +6,12 @@ import {
 import { useDispatch, useSelector } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import {
-  faTrash, faShare, faTag, faTimes, faPlusCircle, faMinusCircle, faPlus,
+  faTrash, faShare, faTag, faTimes, faMinusCircle, faPlus,
 } from '@fortawesome/free-solid-svg-icons';
 import * as Sharing from 'expo-sharing';
 import { useNavigation } from '@react-navigation/native';
 import { addRecordingToBin } from '../redux/actions/binActions';
-import { addTag } from '../redux/actions/tagActions';
-import { updateDemo, updateRecording } from '../redux/actions/demoActions';
+import { updateDemo } from '../redux/actions/demoActions';
 import { setCurrentDemoId } from '../redux/actions/globalActions';
 import appStyles from '../styles/app';
 import listStyles from '../styles/list';
@@ -23,10 +22,9 @@ import {
 } from '../utils/helpers';
 import DeletedRecording from '../models/deletedRecording';
 import Mediaplayer from '../components/mediaplayer';
-import { STORAGE_KEY, BIN_STORAGE_KEY, TAG_STORAGE_KEY } from '../redux/storageKeys';
+import { STORAGE_KEY, BIN_STORAGE_KEY } from '../redux/storageKeys';
 import mediaplayerStyles from '../styles/mediaplayer';
 import modalStyles from '../styles/modal';
-import { create } from 'react-test-renderer';
 
 if (
   Platform.OS === 'android'
@@ -264,7 +262,6 @@ function DemoScreen(_demo) {
             <Text style={modalStyles.bodyText}>
               Select tags to add to the recording
             </Text>
-            {console.log('TAGS', recordingToUpdate.tags)}
             <FlatList
               data={recordingToUpdate.tags}
               ListFooterComponent={(
@@ -281,7 +278,6 @@ function DemoScreen(_demo) {
                   >
                     <FontAwesomeIcon style={modalStyles.tagInputButtonIcon} icon={faPlus}> </FontAwesomeIcon>
                   </TouchableOpacity>
-
                 </View>
               )}
               renderItem={({ item }) => (
