@@ -5,6 +5,7 @@ const mediaplayerStyles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     paddingHorizontal: 10,
+    paddingVertical: 2,
     marginBottom: 10,
   },
   itemActions: {

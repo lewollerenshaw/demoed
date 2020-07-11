@@ -12,7 +12,7 @@ import * as Sharing from 'expo-sharing';
 import { useNavigation } from '@react-navigation/native';
 import { addRecordingToBin } from '../redux/actions/binActions';
 import { addTag } from '../redux/actions/tagActions';
-import { updateDemo } from '../redux/actions/demoActions';
+import { updateDemo, updateRecording } from '../redux/actions/demoActions';
 import { setCurrentDemoId } from '../redux/actions/globalActions';
 import appStyles from '../styles/app';
 import listStyles from '../styles/list';
@@ -26,6 +26,7 @@ import Mediaplayer from '../components/mediaplayer';
 import { STORAGE_KEY, BIN_STORAGE_KEY, TAG_STORAGE_KEY } from '../redux/storageKeys';
 import mediaplayerStyles from '../styles/mediaplayer';
 import modalStyles from '../styles/modal';
+import { create } from 'react-test-renderer';
 
 if (
   Platform.OS === 'android'
@@ -38,7 +39,6 @@ function DemoScreen(_demo) {
   const navigation = useNavigation();
   const [demo, setDemo] = React.useState(_demo.route.params.item);
   const demos = useSelector((state) => state.demos);
-  const tags = useSelector((state) => state.tags);
   const [list, setList] = React.useState(demo.recordings);
   const [open, setOpen] = React.useState(false);
   const [currentRecordingId, setCurrentRecordingId] = React.useState();
@@ -109,28 +109,6 @@ function DemoScreen(_demo) {
     await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(demos));
   };
 
-  const updateRecordingTags = async (tag) => {
-    const updatedRecordings = demo.recordings.filter((item) => item.id !== recordingToUpdate.id);
-
-    recordingToUpdate.tags.includes(createTagText)
-      ? recordingToUpdate.tags = recordingToUpdate.tags.filter((t) => t !== createTagText)
-      : recordingToUpdate.tags.push(createTagText);
-
-    updatedRecordings.push(recordingToUpdate);
-    demo.recordings = updatedRecordings;
-
-    // Update demo with recording with new tags
-    dispatch(updateDemo(demo));
-    await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(demos));
-
-    // Add new tag to redux/local storage
-    if (!tags.includes(createTagText)) {
-      dispatch(addTag(createTagText));
-
-      await AsyncStorage.setItem(TAG_STORAGE_KEY, JSON.stringify(tags));
-    }
-  };
-
   const updateDemoName = async (newTitle) => {
     demo.title = newTitle;
     dispatch(updateDemo(demo));
@@ -153,7 +131,33 @@ function DemoScreen(_demo) {
     Sharing.shareAsync(recording.URI);
   };
 
-  const recordingContainsTag = (tag) => recordingToUpdate.tags.includes(tag);
+  const addTagToRecording = async (tag) => {
+    const updatedRecording = recordingToUpdate;
+    updatedRecording.tags.push(tag);
+
+    setRecordingToUpdate(updatedRecording);
+
+    const updatedRecordings = demo.recordings.filter((rec) => rec.id !== recordingToUpdate.id);
+
+    updatedRecordings.push(recordingToUpdate);
+
+    demo.recordings = updatedRecordings;
+
+    dispatch(updateDemo(demo));
+    await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(demos));
+  };
+
+  const removeTagFromRecording = async (tag) => {
+    const updatedTags = recordingToUpdate.tags.filter((t) => t !== tag);
+    recordingToUpdate.tags = updatedTags;
+
+    const updatedRecordings = demo.recordings.filter((rec) => rec.id !== recordingToUpdate.id);
+    updatedRecordings.push(recordingToUpdate);
+
+    setRecordingToUpdate(recordingToUpdate);
+    dispatch(updateDemo(demo));
+    await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(demos));
+  };
 
   const triggerTagsModal = (recording) => {
     setTagModal(true);
@@ -205,7 +209,7 @@ function DemoScreen(_demo) {
                   </TextInput>
                   <Text style={listStyles.itemInfo}>
                     {formatDate(item.dateCreated)}
-                    {item.tags.length > 0 && `- ${tagStringBuilder(item.tags)}`}
+                    {item.tags.length > 0 && ` - ${tagStringBuilder(item.tags)}`}
                   </Text>
                 </View>
 
@@ -260,19 +264,20 @@ function DemoScreen(_demo) {
             <Text style={modalStyles.bodyText}>
               Select tags to add to the recording
             </Text>
-            {console.log("TAGS", tags)}
+            {console.log('TAGS', recordingToUpdate.tags)}
             <FlatList
-              data={tags}
+              data={recordingToUpdate.tags}
               ListFooterComponent={(
                 <View style={modalStyles.tagInputContainer}>
                   <TextInput
                     style={modalStyles.tagInput}
+                    onSubmitEditing={() => addTagToRecording(createTagText)}
                     onChangeText={(text) => setCreateTagText(text)}
                     placeholder="Create a tag..."
                   />
                   <TouchableOpacity
                     style={modalStyles.tagInputButton}
-                    onPress={() => updateRecordingTags()}
+                    onPress={() => addTagToRecording(createTagText)}
                   >
                     <FontAwesomeIcon style={modalStyles.tagInputButtonIcon} icon={faPlus}> </FontAwesomeIcon>
                   </TouchableOpacity>
@@ -281,9 +286,8 @@ function DemoScreen(_demo) {
               )}
               renderItem={({ item }) => (
                 <View>
-                  <TouchableOpacity
+                  <View
                     style={listStyles.item}
-                  //onPress={() => updateRecordingTags(item)}
                   >
                     <View style={listStyles.itemPrimaryRow}>
                       <View style={listStyles.itemPrimaryColumn}>
@@ -294,11 +298,11 @@ function DemoScreen(_demo) {
                         </Text>
                       </View>
 
-                      <View style={listStyles.itemSecondaryColumn}>
-                        <FontAwesomeIcon style={listStyles.itemIcon} icon={recordingContainsTag(item) ? faMinusCircle : faPlusCircle} />
-                      </View>
+                      <TouchableOpacity onPress={() => removeTagFromRecording(item)} style={listStyles.itemSecondaryColumn}>
+                        <FontAwesomeIcon style={listStyles.itemIcon} icon={faMinusCircle} />
+                      </TouchableOpacity>
                     </View>
-                  </TouchableOpacity>
+                  </View>
                 </View>
               )}
               keyExtractor={(_item, index) => index.toString()}
