@@ -40,9 +40,12 @@ function DemoScreen(_demo) {
   const [list, setList] = React.useState(demo.recordings);
   const [open, setOpen] = React.useState(false);
   const [currentRecordingId, setCurrentRecordingId] = React.useState();
+<<<<<<< HEAD
   const [recordingToUpdate, setRecordingToUpdate] = React.useState({});
   const [tagsModal, setTagModal] = React.useState(false);
   const [createTagText, setCreateTagText] = React.useState(null);
+=======
+>>>>>>> master
   const [isDeleteModalVisible, setDeleteModal] = React.useState(false);
   const [itemToDelete, setItemToDelete] = React.useState({});
   const dispatch = useDispatch();
@@ -132,6 +135,7 @@ function DemoScreen(_demo) {
     Sharing.shareAsync(recording.URI);
   };
 
+<<<<<<< HEAD
   const addTagToRecording = async (tag) => {
     if (tag.length) {
       const updatedRecording = recordingToUpdate;
@@ -168,6 +172,8 @@ function DemoScreen(_demo) {
     setRecordingToUpdate(recording);
   };
 
+=======
+>>>>>>> master
   const triggerItemDeletion = (item) => {
     setItemToDelete(item);
     setDeleteModal(true);
@@ -240,11 +246,14 @@ function DemoScreen(_demo) {
                       <FontAwesomeIcon style={{ color: Colors.$n8 }} size={20} icon={faShare} />
                     </TouchableOpacity>
                     <TouchableOpacity
+<<<<<<< HEAD
                       onPress={() => triggerTagsModal(item)}
                     >
                       <FontAwesomeIcon style={{ color: Colors.$n8 }} size={20} icon={faTag} />
                     </TouchableOpacity>
                     <TouchableOpacity
+=======
+>>>>>>> master
                       onPress={() => triggerItemDeletion(item)}
                     >
                       <FontAwesomeIcon style={{ color: Colors.$n8 }} size={20} icon={faTrash} />
@@ -287,6 +296,7 @@ function DemoScreen(_demo) {
           </View>
         </View>
       </Modal>
+<<<<<<< HEAD
 
       {/* MANAGE TAGS MODEL */}
       <Modal
@@ -347,6 +357,8 @@ function DemoScreen(_demo) {
           </View>
         </View>
       </Modal>
+=======
+>>>>>>> master
     </View>
   );
 }

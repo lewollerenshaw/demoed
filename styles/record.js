@@ -3,18 +3,22 @@ import { Colors } from './colors';
 
 const recordStyles = StyleSheet.create({
   container: {
-    alignItems: 'center',
     backgroundColor: Colors.$darkShade,
     height: 50,
   },
   recordContainer: {
-    backgroundColor: Colors.$lightShade,
+    alignSelf: 'center',
     position: 'relative',
-    bottom: 50,
-    borderRadius: 50,
+    borderStyle: 'solid',
+    borderWidth: 8,
+    borderColor: Colors.$lightShade,
+    backgroundColor: Colors.$lightShade,
+    borderBottomLeftRadius: 50,
+    borderBottomRightRadius: 50,
+    height: 50,
   },
   recordButtonContainer: {
-    margin: 10,
+    bottom: 40,
     justifyContent: 'center',
     alignItems: 'center',
     height: 75,
