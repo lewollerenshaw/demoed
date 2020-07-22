@@ -1,10 +1,15 @@
 {
-  "name": "demoed",
-  "displayName": "demoed",
+  "name": "Demoed",
+  "displayName": "Demoed",
   "expo": {
-    "name": "demoed",
-    "slug": "demoed",
-    "version": "1.0.0",
+    "name": "Demoed",
+    "slug": "Demoed",
+    "version": "1.0.1",
+    "splash": {
+      "backgroundColor": "#FFFFFF",
+      "resizeMode": "cover"
+    },
+    "icon": "./assets/icon.png",
     "platforms": [
       "ios",
       "android",
@@ -12,6 +17,10 @@
     ],
     "assetBundlePatterns": [
       "**/*"
-    ]
+    ],
+    "android": {
+      "package": "com.donefreshly.demoed",
+      "versionCode": 2
+    }
   }
 }

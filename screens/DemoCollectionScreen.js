@@ -149,6 +149,7 @@ function DemoCollectionScreen() {
                   <Text style={listStyles.itemRecordingCount}>{item.recordings.length}</Text>
                 </View>
               </RectButton>
+              <View style={listStyles.divider} />
             </Swipeable>
           )}
           keyExtractor={(_item, index) => index.toString()}

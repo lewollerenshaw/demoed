@@ -44,6 +44,7 @@ const listStyles = StyleSheet.create({
   /* Demo Collection Screen Specific */
   collectionItem: {
     flexDirection: 'row',
+
   },
   itemDate: {
     opacity: 0.6,
@@ -70,6 +71,11 @@ const listStyles = StyleSheet.create({
   },
   itemAssociatedInfo: {
     flexDirection: 'row',
+  },
+
+  divider: {
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.$n2,
   },
 });
 
