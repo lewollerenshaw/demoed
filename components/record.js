@@ -50,7 +50,7 @@ function record() {
     });
 
     await recordingInstance.prepareToRecordAsync(
-      Audio.RECORDING_OPTIONS_PRESET_HIGH_QUALITY,
+      Audio.RECORDING_OPTIONS_PRESET_MAX_QUALITY,
     );
 
     await recordingInstance.startAsync();
