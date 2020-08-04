@@ -43,6 +43,30 @@ const appStyles = StyleSheet.create({
     color: Colors.$danger,
     fontSize: 16,
   },
+  noContentContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  iconContainer: {
+    backgroundColor: Colors.$n3,
+    height: 100,
+    width: 100,
+    borderRadius: 100 / 2,
+    justifyContent: 'center',
+    alignSelf: 'center',
+  },
+  noContentText: {
+    color: Colors.$info,
+    marginTop: '10%',
+    alignSelf: 'center',
+    fontWeight: '700',
+    fontSize: 16,
+  },
+  noContentIcon: {
+    color: Colors.$darkShade,
+    alignSelf: 'center',
+  },
 });
 
 export default appStyles;
