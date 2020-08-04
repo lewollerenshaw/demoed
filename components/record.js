@@ -14,6 +14,7 @@ import Demo from '../models/demo';
 import Recording from '../models/recording';
 import { idGenerator } from '../utils/helpers';
 import recordStyles from '../styles/record';
+import * as RootNavigation from '../services/navigation/RootNavigation';
 import { STORAGE_KEY } from '../redux/storageKeys';
 
 function record() {
@@ -143,6 +144,10 @@ function record() {
 
   return (
     <View style={recordStyles.container}>
+      <RectButton onPress={() => RootNavigation.navigate('SettingsScreen')}>
+        <Text>Settings</Text>
+      </RectButton>
+
       <View style={recordStyles.recordContainer}>
         <RectButton style={recordStyles.recordButtonContainer} onPress={() => handleRecordingPress()}>
           <FontAwesomeIcon style={recordStyles.recordButtonIcon} size={24} icon={isRecording ? faStop : faMicrophone} />

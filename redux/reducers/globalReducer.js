@@ -4,6 +4,7 @@ import {
   SET_CURRENT_SCREEN,
   SET_CURRENT_DEMO_ID,
   SHOULD_NAVIGATE,
+  IS_FOOTER_VISIBLE,
 } from '../actions/globalActions';
 
 export default function globalReducer(state = initialState.global, action) {
@@ -22,6 +23,8 @@ export default function globalReducer(state = initialState.global, action) {
           demoId: action.navigateObj.demoId,
         },
       };
+    case IS_FOOTER_VISIBLE:
+      return { ...state, isFooterVisible: action.set };
     default:
       return state;
   }

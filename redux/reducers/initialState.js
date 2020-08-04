@@ -10,5 +10,6 @@ export default {
       shouldNav: false,
       demoId: '',
     },
+    isFooterVisible: true,
   },
 };
