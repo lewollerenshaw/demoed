@@ -5,7 +5,7 @@ import {
 } from 'react-native';
 import { RectButton } from 'react-native-gesture-handler';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faCompactDisc, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faCompactDisc, faTrash, faVolumeUp } from '@fortawesome/free-solid-svg-icons';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import { useSelector, useDispatch } from 'react-redux';
 import { setDemos, deleteDemo, updateDemo } from '../redux/actions/demoActions';
@@ -26,6 +26,7 @@ function DemoCollectionScreen() {
   const navigation = useNavigation();
   const dispatch = useDispatch();
   const [list, setList] = React.useState([]);
+  const [displayMsg, setDisplayMsg] = React.useState(false);
 
   const updateSearchResults = (search) => {
     const filter = [];
@@ -88,7 +89,14 @@ function DemoCollectionScreen() {
     dispatch(isFooterVisible(true));
   }, []);
 
-  React.useEffect(() => (demos ? setList(demos) : setList([])), [demos]);
+  React.useEffect(() => {
+    if (demos.length === 0) {
+      setDisplayMsg(true);
+    } else {
+      setDisplayMsg(false);
+    }
+    demos ? setList(demos) : setList([]);
+  }, [demos]);
 
   React.useEffect(() => {
     const demoToNav = demos.filter((demo) => demo.id === navigate.demoId);
@@ -119,46 +127,61 @@ function DemoCollectionScreen() {
           />
         </View>
 
-        <FlatList
-          data={sortListByDate(list)}
-          renderItem={({ item }) => (
-            <Swipeable
-              renderRightActions={() => (
-                <TouchableOpacity
-                  style={listStyles.deleteButton}
-                  onPress={() => deleteItem(item)}
+        {displayMsg ? (
+          <View style={appStyles.noContentContainer}>
+            <View style={appStyles.iconContainer}>
+              <FontAwesomeIcon
+                style={appStyles.noContentIcon}
+                icon={faVolumeUp}
+                size={70}
+              />
+            </View>
+            <Text style={appStyles.noContentText}>
+              Press the record button and start recording.
+            </Text>
+          </View>
+        ) : (
+            <FlatList
+              data={sortListByDate(list)}
+              renderItem={({ item }) => (
+                <Swipeable
+                  renderRightActions={() => (
+                    <TouchableOpacity
+                      style={listStyles.deleteButton}
+                      onPress={() => deleteItem(item)}
+                    >
+                      <FontAwesomeIcon style={listStyles.deleteButtonIcon} icon={faTrash} />
+                    </TouchableOpacity>
+                  )}
+                  friction={2}
+                  rightThreshold={80}
+                  leftThreshold={80}
                 >
-                  <FontAwesomeIcon style={listStyles.deleteButtonIcon} icon={faTrash} />
-                </TouchableOpacity>
-              )}
-              friction={2}
-              rightThreshold={80}
-              leftThreshold={80}
-            >
-              <RectButton
-                style={[listStyles.item, listStyles.collectionItem]}
-                onPress={() => navigation.navigate('DemoScreen', { item })}
-              >
-                <View style={listStyles.itemPrimaryColumn}>
-                  <TextInput
-                    style={listStyles.itemHeader}
-                    onChangeText={(value) => updateDemoName(item, value)}
+                  <RectButton
+                    style={[listStyles.item, listStyles.collectionItem]}
+                    onPress={() => navigation.navigate('DemoScreen', { item })}
                   >
-                    {item.title}
-                  </TextInput>
-                  <Text style={listStyles.itemDate}>{formatDate(item.dateCreated)}</Text>
-                </View>
+                    <View style={listStyles.itemPrimaryColumn}>
+                      <TextInput
+                        style={listStyles.itemHeader}
+                        onChangeText={(value) => updateDemoName(item, value)}
+                      >
+                        {item.title}
+                      </TextInput>
+                      <Text style={listStyles.itemDate}>{formatDate(item.dateCreated)}</Text>
+                    </View>
 
-                <View style={listStyles.itemSecondaryColumn}>
-                  <FontAwesomeIcon style={listStyles.itemIcon} icon={faCompactDisc} />
-                  <Text style={listStyles.itemRecordingCount}>{item.recordings.length}</Text>
-                </View>
-              </RectButton>
-              <View style={listStyles.divider} />
-            </Swipeable>
+                    <View style={listStyles.itemSecondaryColumn}>
+                      <FontAwesomeIcon style={listStyles.itemIcon} icon={faCompactDisc} />
+                      <Text style={listStyles.itemRecordingCount}>{item.recordings.length}</Text>
+                    </View>
+                  </RectButton>
+                  <View style={listStyles.divider} />
+                </Swipeable>
+              )}
+              keyExtractor={(_item, index) => index.toString()}
+            />
           )}
-          keyExtractor={(_item, index) => index.toString()}
-        />
       </View>
     </View>
   );

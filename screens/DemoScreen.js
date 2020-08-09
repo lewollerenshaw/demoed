@@ -6,7 +6,7 @@ import {
 import { useDispatch, useSelector } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import {
-  faTrash, faShare, faTag, faTimes, faMinusCircle, faPlus,
+  faTrash, faShare, faTag, faTimes, faMinusCircle, faPlus, faVolumeUp,
 } from '@fortawesome/free-solid-svg-icons';
 import * as Sharing from 'expo-sharing';
 import { useNavigation } from '@react-navigation/native';
@@ -45,6 +45,7 @@ function DemoScreen(_demo) {
   const [createTagText, setCreateTagText] = React.useState(null);
   const [isDeleteModalVisible, setDeleteModal] = React.useState(false);
   const [itemToDelete, setItemToDelete] = React.useState({});
+  const [displayMsg, setDisplayMsg] = React.useState(false);
   const dispatch = useDispatch();
 
   const updateSearchResults = (search) => {
@@ -174,8 +175,21 @@ function DemoScreen(_demo) {
   };
 
   React.useEffect(() => {
+    if (demo.recordings.length === 0) {
+      setDisplayMsg(true);
+    } else {
+      setDisplayMsg(false);
+    }
     dispatch(setCurrentDemoId(demo.id));
   }, []);
+
+  React.useEffect(() => {
+    if (demos[0].recordings.length === 0) {
+      setDisplayMsg(true);
+    } else {
+      setDisplayMsg(false);
+    }
+  }, [demos]);
 
   return (
     <View style={appStyles.container}>
@@ -199,64 +213,77 @@ function DemoScreen(_demo) {
             placeholderTextColor={Colors.$n6}
           />
         </View>
+        {displayMsg ? (
+          <View style={appStyles.noContentContainer}>
+            <View style={appStyles.iconContainer}>
+              <FontAwesomeIcon
+                style={appStyles.noContentIcon}
+                icon={faVolumeUp}
+                size={70}
+              />
+            </View>
+            <Text style={appStyles.noContentText}>
+              Press the record button and start recording.
+            </Text>
+          </View>
+        ) : (
+            <FlatList
+              data={sortListByDate(list)}
+              renderItem={({ item }) => (
 
-        <FlatList
-          data={sortListByDate(list)}
-          renderItem={({ item }) => (
+                <TouchableOpacity
+                  style={listStyles.item}
+                  onPress={() => toggleMediaplayer(item.id)}
+                >
+                  <View style={listStyles.itemPrimaryRow}>
+                    <View style={listStyles.itemPrimaryColumn}>
+                      <TextInput
+                        style={listStyles.itemHeader}
+                        onChangeText={(value) => updateRecordingName(item, value)}
+                      >
+                        {item.title}
+                      </TextInput>
+                      <Text style={listStyles.itemInfo}>
+                        {formatDate(item.dateCreated)}
+                        {item.tags.length > 0 && ` - ${tagStringBuilder(item.tags)}`}
+                      </Text>
+                    </View>
 
-            <TouchableOpacity
-              style={listStyles.item}
-              onPress={() => toggleMediaplayer(item.id)}
-            >
-              <View style={listStyles.itemPrimaryRow}>
-                <View style={listStyles.itemPrimaryColumn}>
-                  <TextInput
-                    style={listStyles.itemHeader}
-                    onChangeText={(value) => updateRecordingName(item, value)}
-                  >
-                    {item.title}
-                  </TextInput>
-                  <Text style={listStyles.itemInfo}>
-                    {formatDate(item.dateCreated)}
-                    {item.tags.length > 0 && ` - ${tagStringBuilder(item.tags)}`}
-                  </Text>
-                </View>
-
-                {(open && currentRecordingId !== item.id || !open) ? (
-                  <View style={listStyles.itemSecondaryColumn}>
-                    <Text style={listStyles.itemRecordingDuration}>{millisToMinutesAndSeconds(item.duration)}</Text>
+                    {(open && currentRecordingId !== item.id || !open) ? (
+                      <View style={listStyles.itemSecondaryColumn}>
+                        <Text style={listStyles.itemRecordingDuration}>{millisToMinutesAndSeconds(item.duration)}</Text>
+                      </View>
+                    ) : null}
                   </View>
-                ) : null}
-              </View>
 
-              {open && currentRecordingId === item.id && (
-                <View style={listStyles.itemSecondaryRow}>
-                  <Mediaplayer open={open} rec={item} />
+                  {open && currentRecordingId === item.id && (
+                    <View style={listStyles.itemSecondaryRow}>
+                      <Mediaplayer open={open} rec={item} />
 
-                  <View style={mediaplayerStyles.itemActions}>
-                    <TouchableOpacity
-                      onPress={() => handleShare(item)}
-                    >
-                      <FontAwesomeIcon style={{ color: Colors.$n8 }} size={20} icon={faShare} />
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                      onPress={() => triggerTagsModal(item)}
-                    >
-                      <FontAwesomeIcon style={{ color: Colors.$n8 }} size={20} icon={faTag} />
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                      onPress={() => triggerItemDeletion(item)}
-                    >
-                      <FontAwesomeIcon style={{ color: Colors.$n8 }} size={20} icon={faTrash} />
-                    </TouchableOpacity>
-                  </View>
-                </View>
+                      <View style={mediaplayerStyles.itemActions}>
+                        <TouchableOpacity
+                          onPress={() => handleShare(item)}
+                        >
+                          <FontAwesomeIcon style={{ color: Colors.$n8 }} size={20} icon={faShare} />
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                          onPress={() => triggerTagsModal(item)}
+                        >
+                          <FontAwesomeIcon style={{ color: Colors.$n8 }} size={20} icon={faTag} />
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                          onPress={() => triggerItemDeletion(item)}
+                        >
+                          <FontAwesomeIcon style={{ color: Colors.$n8 }} size={20} icon={faTrash} />
+                        </TouchableOpacity>
+                      </View>
+                    </View>
+                  )}
+
+                </TouchableOpacity>
               )}
-
-            </TouchableOpacity>
-          )}
-          keyExtractor={(_item, index) => index.toString()}
-        />
+              keyExtractor={(_item, index) => index.toString()}
+            />)}
       </View>
 
       {/* DELETE MODAL */}
