@@ -67,6 +67,11 @@ const appStyles = StyleSheet.create({
     color: Colors.$darkShade,
     alignSelf: 'center',
   },
+  backChevron: {
+    marginRight: 10,
+    position: 'relative',
+    top: 2,
+  },
 });
 
 export default appStyles;

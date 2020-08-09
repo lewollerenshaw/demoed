@@ -10,5 +10,9 @@ export default {
       shouldNav: false,
       demoId: '',
     },
+    isFooterVisible: true,
+  },
+  settings: {
+    quality: 'MAX',
   },
 };

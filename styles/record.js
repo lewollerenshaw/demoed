@@ -4,7 +4,7 @@ import { Colors } from './colors';
 const recordStyles = StyleSheet.create({
   container: {
     backgroundColor: Colors.$darkShade,
-    height: 50,
+    height: 65,
   },
   recordContainer: {
     alignSelf: 'center',
