@@ -12,4 +12,7 @@ export default {
     },
     isFooterVisible: true,
   },
+  settings: {
+    quality: 'MAX',
+  },
 };

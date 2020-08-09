@@ -21,10 +21,16 @@ function record() {
   const [permissions, setPermissions] = React.useState();
   const [isRecording, setIsRecording] = React.useState(false);
   const [recordingInstance, setRecordingInstance] = React.useState(null);
+  const [recordingQuality, setRecordingQuality] = React.useState();
   const currentScreen = useSelector((state) => state.global.currentScreen);
   const currentDemoId = useSelector((state) => state.global.currentDemoId);
+  const settings = useSelector((state) => state.settings);
   const demos = useSelector((state) => state.demos);
   const dispatch = useDispatch();
+
+  React.useEffect(() => {
+    setRecordingQuality(settings.quality);
+  }, [settings]);
 
   const getPermissions = async () => {
     const response = await Audio.requestPermissionsAsync();
@@ -50,11 +56,19 @@ function record() {
       playThroughEarpieceAndroid: false,
     });
 
-    await recordingInstance.prepareToRecordAsync(
-      Audio.RECORDING_OPTIONS_PRESET_HIGH_QUALITY,
-    );
+    if (recordingQuality === 'HIGH') {
+      await recordingInstance.prepareToRecordAsync(
+        Audio.RECORDING_OPTIONS_PRESET_HIGH_QUALITY,
+      );
 
-    await recordingInstance.startAsync();
+      await recordingInstance.startAsync();
+    } else {
+      await recordingInstance.prepareToRecordAsync(
+        Audio.RECORDING_OPTIONS_PRESET_LOW_QUALITY,
+      );
+
+      await recordingInstance.startAsync();
+    }
   };
 
   const moveRecordingToNewFolder = async () => {

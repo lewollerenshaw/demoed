@@ -17,7 +17,8 @@ import searchStyles from '../styles/search';
 import { Colors } from '../styles/colors';
 import { sortListByDate, formatDate, idGenerator } from '../utils/helpers';
 import DeletedDemo from '../models/deletedDemo';
-import { STORAGE_KEY, BIN_STORAGE_KEY } from '../redux/storageKeys';
+import { STORAGE_KEY, BIN_STORAGE_KEY, SETTINGS_STORAGE_KEY } from '../redux/storageKeys';
+import { setAudioQuality } from '../redux/actions/settingsActions';
 
 function DemoCollectionScreen() {
   const demos = useSelector((state) => state.demos);
@@ -80,12 +81,20 @@ function DemoCollectionScreen() {
     await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(demos));
   };
 
-  React.useEffect(() => {
-    fetchDataAndSetInRedux();
-  }, []);
+  const getAndSetAudioQuality = async () => {
+    const settingsStorage = JSON.parse(await AsyncStorage.getItem(SETTINGS_STORAGE_KEY));
+
+    if (settingsStorage === null) {
+      dispatch(setAudioQuality('HIGH'));
+    } else {
+      dispatch(setAudioQuality(settingsStorage.quality));
+    }
+  };
 
   React.useEffect(() => {
+    fetchDataAndSetInRedux();
     dispatch(isFooterVisible(true));
+    getAndSetAudioQuality();
   }, []);
 
   React.useEffect(() => (demos ? setList(demos) : setList([])), [demos]);
