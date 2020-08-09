@@ -1,10 +1,9 @@
 {
-  "name": "Demoed",
   "displayName": "Demoed",
   "expo": {
     "name": "Demoed",
-    "slug": "Demoed",
-    "version": "1.0.1",
+    "slug": "demoed",
+    "version": "1.0.2",
     "splash": {
       "backgroundColor": "#FFFFFF",
       "resizeMode": "cover"
@@ -19,8 +18,8 @@
       "**/*"
     ],
     "android": {
-      "package": "com.donefreshly.demoed",
-      "versionCode": 2
+      "package": "com.freshlydone.demoed",
+      "versionCode": 3
     }
   }
 }
