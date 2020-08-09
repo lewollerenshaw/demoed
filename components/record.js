@@ -2,7 +2,7 @@ import React from 'react';
 import * as FileSystem from 'expo-file-system';
 import { Audio } from 'expo-av';
 import {
-  View, AsyncStorage, Text,
+  View, AsyncStorage, Text, Modal, TouchableOpacity, TouchableWithoutFeedback, TouchableHighlight,
 } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
@@ -15,11 +15,15 @@ import Recording from '../models/recording';
 import { idGenerator } from '../utils/helpers';
 import recordStyles from '../styles/record';
 import { STORAGE_KEY } from '../redux/storageKeys';
+import { Colors } from '../styles/colors';
 
 function record() {
   const [permissions, setPermissions] = React.useState();
   const [isRecording, setIsRecording] = React.useState(false);
   const [recordingInstance, setRecordingInstance] = React.useState(null);
+  const [modalVisible, setModalVisible] = React.useState(false);
+  const [interv, setInterv] = React.useState(null);
+  const [time, setTime] = React.useState({ sec: 0, min: 0 });
   const currentScreen = useSelector((state) => state.global.currentScreen);
   const currentDemoId = useSelector((state) => state.global.currentDemoId);
   const demos = useSelector((state) => state.demos);
@@ -38,6 +42,17 @@ function record() {
     }
   };
 
+  let s = 0;
+  let m = 0;
+  function run() {
+    if (s === 59) {
+      m++;
+      s = -1;
+    }
+    s++;
+    return setTime({ sec: s, min: m });
+  }
+
   const startRecording = async () => {
     setIsRecording(true);
 
@@ -53,6 +68,8 @@ function record() {
       Audio.RECORDING_OPTIONS_PRESET_MAX_QUALITY,
     );
 
+    setModalVisible(true);
+    setInterv(setInterval(run, 1000));
     await recordingInstance.startAsync();
   };
 
@@ -122,6 +139,10 @@ function record() {
     setIsRecording(false);
     setRecordingInstance(null);
 
+    setModalVisible(false);
+    clearInterval(interv);
+    setTime({ sec: 0, min: 0 });
+
     const URI = await moveRecordingToNewFolder();
     await storeRecording(URI, response);
   };
@@ -142,13 +163,55 @@ function record() {
   }, [currentDemoId]);
 
   return (
-    <View style={recordStyles.container}>
-      <View style={recordStyles.recordContainer}>
-        <RectButton style={recordStyles.recordButtonContainer} onPress={() => handleRecordingPress()}>
-          <FontAwesomeIcon style={recordStyles.recordButtonIcon} size={24} icon={isRecording ? faStop : faMicrophone} />
-        </RectButton>
+    <>
+      <Modal
+        animationType="fade"
+        transparent
+        visible={modalVisible}
+      >
+        <>
+          <View style={{
+            flex: 1,
+            justifyContent: 'center',
+            alignItems: 'center',
+            marginTop: 22,
+          }}
+          >
+            <View style={{
+              justifyContent: 'center', height: 200, width: 200, borderRadius: 200 / 2, backgroundColor: Colors.$lightAccent,
+            }}
+            >
+              <Text style={{ alignSelf: 'center' }}>
+                {time.min >= 10 ? time.min : `0${time.min}`}
+                :
+                {time.sec >= 10 ? time.sec : `0${time.sec}`}
+              </Text>
+            </View>
+
+          </View>
+          <View style={recordStyles.container}>
+            <View style={recordStyles.recordContainer}>
+              <TouchableHighlight
+                activeOpacity={0.6}
+                underlayColor="#DDDDDD"
+                style={recordStyles.recordButtonContainer}
+                onPress={() => handleRecordingPress()}
+              >
+                <FontAwesomeIcon style={recordStyles.recordButtonIcon} size={24} icon={isRecording ? faStop : faMicrophone} />
+              </TouchableHighlight>
+            </View>
+          </View>
+        </>
+      </Modal>
+
+      <View style={recordStyles.container}>
+        <View style={recordStyles.recordContainer}>
+          <RectButton style={recordStyles.recordButtonContainer} onPress={() => handleRecordingPress()}>
+            <FontAwesomeIcon style={recordStyles.recordButtonIcon} size={24} icon={isRecording ? faStop : faMicrophone} />
+          </RectButton>
+        </View>
       </View>
-    </View>
+    </>
   );
 }
 export default record;
