@@ -22,13 +22,22 @@ function record() {
   const [permissions, setPermissions] = React.useState();
   const [isRecording, setIsRecording] = React.useState(false);
   const [recordingInstance, setRecordingInstance] = React.useState(null);
+<<<<<<< HEAD
   const [modalVisible, setModalVisible] = React.useState(false);
   const [interv, setInterv] = React.useState(null);
   const [time, setTime] = React.useState({ sec: 0, min: 0 });
+=======
+  const [recordingQuality, setRecordingQuality] = React.useState();
+>>>>>>> 1a28a8e6f88a73c8643077134a6feacca50d6ae0
   const currentScreen = useSelector((state) => state.global.currentScreen);
   const currentDemoId = useSelector((state) => state.global.currentDemoId);
+  const settings = useSelector((state) => state.settings);
   const demos = useSelector((state) => state.demos);
   const dispatch = useDispatch();
+
+  React.useEffect(() => {
+    setRecordingQuality(settings.quality);
+  }, [settings]);
 
   const getPermissions = async () => {
     const response = await Audio.requestPermissionsAsync();
@@ -65,13 +74,19 @@ function record() {
       playThroughEarpieceAndroid: false,
     });
 
-    await recordingInstance.prepareToRecordAsync(
-      Audio.RECORDING_OPTIONS_PRESET_MAX_QUALITY,
-    );
+    if (recordingQuality === 'HIGH') {
+      await recordingInstance.prepareToRecordAsync(
+        Audio.RECORDING_OPTIONS_PRESET_HIGH_QUALITY,
+      );
 
-    setModalVisible(true);
-    setInterv(setInterval(run, 1000));
-    await recordingInstance.startAsync();
+      await recordingInstance.startAsync();
+    } else {
+      await recordingInstance.prepareToRecordAsync(
+        Audio.RECORDING_OPTIONS_PRESET_LOW_QUALITY,
+      );
+
+      await recordingInstance.startAsync();
+    }
   };
 
   const moveRecordingToNewFolder = async () => {
