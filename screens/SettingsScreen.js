@@ -15,6 +15,8 @@ import * as RootNavigation from '../services/navigation/RootNavigation';
 function SettingsScreen() {
   const settings = useSelector((state) => state.settings);
   const [quality, setQuality] = React.useState(settings.quality);
+  const [optionalSaveRecording, setOptionalSaveRecording] = React.useState('true');
+  const [autoSaveToDemo, setAutoSaveToDemo] = React.useState('true');
 
   const dispatch = useDispatch();
 
@@ -55,6 +57,26 @@ function SettingsScreen() {
         >
           <Picker.Item label="High" value="HIGH" />
           <Picker.Item label="Low" value="LOW" />
+        </Picker>
+
+        <Text>Auto Save Recordings</Text>
+        <Picker
+          selectedValue={optionalSaveRecording}
+          style={{ height: 50, width: 150 }}
+          onValueChange={(itemValue) => setOptionalSaveRecording(itemValue)}
+        >
+          <Picker.Item label="Auto Save Recordings" value="true" />
+          <Picker.Item label="Option To Cancel Recording Before Saving" value="false" />
+        </Picker>
+
+        <Text>Create New Demo On Finish Recording</Text>
+        <Picker
+          selectedValue={autoSaveToDemo}
+          style={{ height: 50, width: 150 }}
+          onValueChange={(itemValue) => setAutoSaveToDemo(itemValue)}
+        >
+          <Picker.Item label="Create New Demo" value="true" />
+          <Picker.Item label="Select Demo" value="false" />
         </Picker>
 
         <TouchableOpacity onPress={() => handleSave()}>
