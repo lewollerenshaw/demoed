@@ -2,7 +2,7 @@ import React from 'react';
 import * as FileSystem from 'expo-file-system';
 import { Audio } from 'expo-av';
 import {
-  View, AsyncStorage, Text, Modal, TouchableOpacity, TouchableWithoutFeedback, TouchableHighlight,
+  View, AsyncStorage, Text, Modal, TouchableHighlight,
 } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
@@ -42,14 +42,16 @@ function record() {
     }
   };
 
-  let s = 0;
-  let m = 0;
   function run() {
+    let s = 0;
+    let m = 0;
+
     if (s === 59) {
-      m++;
-      s = -1;
+      m += 1;
+      s -= 1;
     }
-    s++;
+
+    s += 1;
     return setTime({ sec: s, min: m });
   }
 

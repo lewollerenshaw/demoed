@@ -227,63 +227,64 @@ function DemoScreen(_demo) {
             </Text>
           </View>
         ) : (
-            <FlatList
-              data={sortListByDate(list)}
-              renderItem={({ item }) => (
+          <FlatList
+            data={sortListByDate(list)}
+            renderItem={({ item }) => (
 
-                <TouchableOpacity
-                  style={listStyles.item}
-                  onPress={() => toggleMediaplayer(item.id)}
-                >
-                  <View style={listStyles.itemPrimaryRow}>
-                    <View style={listStyles.itemPrimaryColumn}>
-                      <TextInput
-                        style={listStyles.itemHeader}
-                        onChangeText={(value) => updateRecordingName(item, value)}
-                      >
-                        {item.title}
-                      </TextInput>
-                      <Text style={listStyles.itemInfo}>
-                        {formatDate(item.dateCreated)}
-                        {item.tags.length > 0 && ` - ${tagStringBuilder(item.tags)}`}
-                      </Text>
-                    </View>
-
-                    {(open && currentRecordingId !== item.id || !open) ? (
-                      <View style={listStyles.itemSecondaryColumn}>
-                        <Text style={listStyles.itemRecordingDuration}>{millisToMinutesAndSeconds(item.duration)}</Text>
-                      </View>
-                    ) : null}
+              <TouchableOpacity
+                style={listStyles.item}
+                onPress={() => toggleMediaplayer(item.id)}
+              >
+                <View style={listStyles.itemPrimaryRow}>
+                  <View style={listStyles.itemPrimaryColumn}>
+                    <TextInput
+                      style={listStyles.itemHeader}
+                      onChangeText={(value) => updateRecordingName(item, value)}
+                    >
+                      {item.title}
+                    </TextInput>
+                    <Text style={listStyles.itemInfo}>
+                      {formatDate(item.dateCreated)}
+                      {item.tags.length > 0 && ` - ${tagStringBuilder(item.tags)}`}
+                    </Text>
                   </View>
 
-                  {open && currentRecordingId === item.id && (
-                    <View style={listStyles.itemSecondaryRow}>
-                      <Mediaplayer open={open} rec={item} />
-
-                      <View style={mediaplayerStyles.itemActions}>
-                        <TouchableOpacity
-                          onPress={() => handleShare(item)}
-                        >
-                          <FontAwesomeIcon style={{ color: Colors.$n8 }} size={20} icon={faShare} />
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                          onPress={() => triggerTagsModal(item)}
-                        >
-                          <FontAwesomeIcon style={{ color: Colors.$n8 }} size={20} icon={faTag} />
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                          onPress={() => triggerItemDeletion(item)}
-                        >
-                          <FontAwesomeIcon style={{ color: Colors.$n8 }} size={20} icon={faTrash} />
-                        </TouchableOpacity>
-                      </View>
+                  {(open && currentRecordingId !== item.id || !open) ? (
+                    <View style={listStyles.itemSecondaryColumn}>
+                      <Text style={listStyles.itemRecordingDuration}>{millisToMinutesAndSeconds(item.duration)}</Text>
                     </View>
-                  )}
+                  ) : null}
+                </View>
 
-                </TouchableOpacity>
-              )}
-              keyExtractor={(_item, index) => index.toString()}
-            />)}
+                {open && currentRecordingId === item.id && (
+                <View style={listStyles.itemSecondaryRow}>
+                  <Mediaplayer open={open} rec={item} />
+
+                  <View style={mediaplayerStyles.itemActions}>
+                    <TouchableOpacity
+                      onPress={() => handleShare(item)}
+                    >
+                      <FontAwesomeIcon style={{ color: Colors.$n8 }} size={20} icon={faShare} />
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      onPress={() => triggerTagsModal(item)}
+                    >
+                      <FontAwesomeIcon style={{ color: Colors.$n8 }} size={20} icon={faTag} />
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      onPress={() => triggerItemDeletion(item)}
+                    >
+                      <FontAwesomeIcon style={{ color: Colors.$n8 }} size={20} icon={faTrash} />
+                    </TouchableOpacity>
+                  </View>
+                </View>
+                )}
+
+              </TouchableOpacity>
+            )}
+            keyExtractor={(_item, index) => index.toString()}
+          />
+        )}
       </View>
 
       {/* DELETE MODAL */}
