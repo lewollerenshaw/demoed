@@ -14,5 +14,7 @@ export default {
   },
   settings: {
     quality: 'MAX',
+    optionalSaveRecording: 'true',
+    autoSaveToDemo: 'true',
   },
 };

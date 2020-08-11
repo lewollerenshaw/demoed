@@ -7,7 +7,7 @@ import { faChevronLeft } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { isFooterVisible } from '../redux/actions/globalActions';
 import { SETTINGS_STORAGE_KEY } from '../redux/storageKeys';
-import { setAudioQuality } from '../redux/actions/settingsActions';
+import { setAudioQuality, setOptionSaveRecording, setAutoSaveToDemoInRedux } from '../redux/actions/settingsActions';
 import appStyles from '../styles/app';
 import settingsStyles from '../styles/settings';
 import * as RootNavigation from '../services/navigation/RootNavigation';
@@ -15,26 +15,39 @@ import * as RootNavigation from '../services/navigation/RootNavigation';
 function SettingsScreen() {
   const settings = useSelector((state) => state.settings);
   const [quality, setQuality] = React.useState(settings.quality);
-  const [optionalSaveRecording, setOptionalSaveRecording] = React.useState('true');
-  const [autoSaveToDemo, setAutoSaveToDemo] = React.useState('true');
-
+  const [optionalSaveRecording, setOptionalSaveRecording] = React.useState(settings.optionalSaveRecording);
+  const [autoSaveToDemo, setAutoSaveToDemo] = React.useState(settings.autoSaveToDemo);
   const dispatch = useDispatch();
 
   React.useEffect(() => {
     dispatch(isFooterVisible(false));
   }, []);
 
-  const handleSave = async () => {
+  const changeSettingsInStorage = async () => {
+    // Get
+    let settingsStorage = JSON.parse(await AsyncStorage.getItem(SETTINGS_STORAGE_KEY));
+    // Change
+    settingsStorage = {
+      quality,
+      optionalSaveRecording,
+      autoSaveToDemo,
+    };
+    // Set
+    await AsyncStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(settingsStorage));
+  };
+
+  const handleSave = () => {
     // Set audio quality in redux so it can be fetched instantly
     dispatch(setAudioQuality(quality));
 
-    // Set audio quality in async
-    // Get
-    const settingsStorage = JSON.parse(await AsyncStorage.getItem(SETTINGS_STORAGE_KEY));
-    // Change
-    settingsStorage.quality = quality;
-    // Set
-    await AsyncStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(settingsStorage));
+    // Set auto save in redux so it can be fetched instantly
+    dispatch(setOptionSaveRecording(optionalSaveRecording));
+
+    // Set auto save in redux so it can be fetched instantly
+    dispatch(setAutoSaveToDemoInRedux(autoSaveToDemo));
+
+    // Set in async
+    changeSettingsInStorage();
   };
 
   return (

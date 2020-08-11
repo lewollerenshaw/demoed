@@ -27,6 +27,7 @@ function record() {
   const currentScreen = useSelector((state) => state.global.currentScreen);
   const currentDemoId = useSelector((state) => state.global.currentDemoId);
   const demos = useSelector((state) => state.demos);
+  const settings = useSelector((state) => state.settings);
   const dispatch = useDispatch();
 
   const getPermissions = async () => {
@@ -66,9 +67,15 @@ function record() {
       playThroughEarpieceAndroid: false,
     });
 
-    await recordingInstance.prepareToRecordAsync(
-      Audio.RECORDING_OPTIONS_PRESET_MAX_QUALITY,
-    );
+    if (settings.quality === 'MAX') {
+      await recordingInstance.prepareToRecordAsync(
+        Audio.RECORDING_OPTIONS_PRESET_MAX_QUALITY,
+      );
+    } else {
+      await recordingInstance.prepareToRecordAsync(
+        Audio.RECORDING_OPTIONS_PRESET_LOW_QUALITY,
+      );
+    }
 
     setModalVisible(true);
     setInterv(setInterval(run, 1000));
