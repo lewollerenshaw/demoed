@@ -2,7 +2,7 @@ import React from 'react';
 import * as FileSystem from 'expo-file-system';
 import { Audio } from 'expo-av';
 import {
-  View, AsyncStorage, Text, Modal, TouchableHighlight,
+  View, AsyncStorage, Text, Modal, TouchableHighlight, TouchableOpacity,
 } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
@@ -22,6 +22,7 @@ function record() {
   const [isRecording, setIsRecording] = React.useState(false);
   const [recordingInstance, setRecordingInstance] = React.useState(null);
   const [modalVisible, setModalVisible] = React.useState(false);
+  const [saveModalVisible, setSaveModalVisible] = React.useState(false);
   const [interv, setInterv] = React.useState(null);
   const [time, setTime] = React.useState({ sec: 0, min: 0 });
   const currentScreen = useSelector((state) => state.global.currentScreen);
@@ -43,10 +44,11 @@ function record() {
     }
   };
 
-  function run() {
-    let s = 0;
-    let m = 0;
+  // Need to be outside of function or it doesn't work
+  let s = 0;
+  let m = 0;
 
+  function run() {
     if (s === 59) {
       m += 1;
       s -= 1;
@@ -98,6 +100,7 @@ function record() {
   };
 
   const storeRecording = async (URI, response) => {
+    console.log(settings.optionalSaveRecording);
     const recording = new Recording(
       idGenerator(),
       '',
@@ -108,6 +111,7 @@ function record() {
     );
 
     if (currentScreen === 'DemoCollectionScreen') {
+      // New Demo
       recording.title = 'Take 1';
       const demoId = idGenerator();
       const demo = new Demo(
@@ -127,6 +131,7 @@ function record() {
 
       dispatch(shouldNavigate({ shouldNav: true, demoId }));
     } else {
+      // Not new demo
       // Set recording name
       const currentDemo = demos.filter((demo) => demo.id === currentDemoId);
       recording.title = `Take ${currentDemo[0].recordings.length + 1}`;
@@ -143,21 +148,40 @@ function record() {
     }
   };
 
-  const stopRecording = async () => {
-    const response = await recordingInstance.stopAndUnloadAsync();
-    setIsRecording(false);
-    setRecordingInstance(null);
-
-    setModalVisible(false);
-    clearInterval(interv);
-    setTime({ sec: 0, min: 0 });
-
+  const stopRecording = async (response) => {
+    console.log("Stop recording", response)
     const URI = await moveRecordingToNewFolder();
     await storeRecording(URI, response);
   };
 
-  const handleRecordingPress = () => {
-    if (permissions) if (isRecording) stopRecording(); else createRecordingInstance();
+  // Needs to be outside of function else it gets reset every time func is called
+  let response;
+  const handleRecordingPress = async () => {
+    if (permissions) {
+      if (saveModalVisible === true) {
+        console.log("save modal", response)
+        stopRecording(response);
+        setSaveModalVisible(false);
+      }
+      if (isRecording) {
+        console.log('Recording');
+        response = await recordingInstance.stopAndUnloadAsync();
+        console.log(response);
+        clearInterval(interv);
+        setTime({ sec: 0, min: 0 });
+
+        setRecordingInstance(null);
+        setIsRecording(false);
+        setModalVisible(false);
+
+        if (settings.optionalSaveRecording === 'false') {
+          console.log('Here 1');
+          setSaveModalVisible(true);
+        } else {
+          stopRecording(response);
+        }
+      } else createRecordingInstance();
+    }
   };
 
   React.useEffect(() => {
@@ -173,6 +197,34 @@ function record() {
 
   return (
     <>
+      <Modal
+        animationType="fade"
+        transparent
+        visible={saveModalVisible}
+      >
+
+        <View style={{
+          flex: 1,
+          justifyContent: 'center',
+          alignItems: 'center',
+          marginTop: 22,
+        }}
+        >
+          <View style={{
+            justifyContent: 'center', height: 200, width: 200, backgroundColor: Colors.$lightAccent,
+          }}
+          >
+            <TouchableOpacity onPress={() => handleRecordingPress()}>
+              <Text>Save</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => setSaveModalVisible(false)}>
+              <Text>Cancel</Text>
+            </TouchableOpacity>
+          </View>
+
+        </View>
+
+      </Modal>
       <Modal
         animationType="fade"
         transparent
