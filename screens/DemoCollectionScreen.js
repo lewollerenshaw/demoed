@@ -18,7 +18,7 @@ import { Colors } from '../styles/colors';
 import { sortListByDate, formatDate, idGenerator } from '../utils/helpers';
 import DeletedDemo from '../models/deletedDemo';
 import { STORAGE_KEY, BIN_STORAGE_KEY, SETTINGS_STORAGE_KEY } from '../redux/storageKeys';
-import { setAudioQuality, } from '../redux/actions/settingsActions';
+import { setAudioQuality } from '../redux/actions/settingsActions';
 
 function DemoCollectionScreen() {
   const demos = useSelector((state) => state.demos);
@@ -73,11 +73,7 @@ function DemoCollectionScreen() {
 
     if (storageDemos) dispatch(setDemos(storageDemos));
     if (storageBin) dispatch(setBin(storageBin));
-    if (settingsStorage) {
-      dispatch(setAudioQuality(settingsStorage.quality));
-      dispatch(setOptionSaveRecording(settingsStorage.optionalSaveRecording));
-      dispatch(setAutoSaveToDemoInRedux(settingsStorage.autoSaveToDemo));
-    }
+    if (settingsStorage) dispatch(setAudioQuality(settingsStorage.quality));
   };
 
   const updateDemoName = async (demo, newTitle) => {

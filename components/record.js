@@ -43,7 +43,7 @@ function record() {
     }
   };
 
-  // Need to be outside of function or it doesn't work
+  // Need to be outside of function otherwise values reset
   let s = 0;
   let m = 0;
 
@@ -109,7 +109,6 @@ function record() {
     );
 
     if (currentScreen === 'DemoCollectionScreen') {
-      // New Demo
       recording.title = 'Take 1';
       const demoId = idGenerator();
       const demo = new Demo(
@@ -129,7 +128,6 @@ function record() {
 
       dispatch(shouldNavigate({ shouldNav: true, demoId }));
     } else {
-      // Not new demo
       // Set recording name
       const currentDemo = demos.filter((demo) => demo.id === currentDemoId);
       recording.title = `Take ${currentDemo[0].recordings.length + 1}`;
