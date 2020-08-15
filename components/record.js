@@ -148,40 +148,21 @@ function record() {
     }
   };
 
-  const stopRecording = async (response) => {
-    console.log("Stop recording", response)
+  const stopRecording = async () => {
+    const response = await recordingInstance.stopAndUnloadAsync();
+    setIsRecording(false);
+    setRecordingInstance(null);
+
+    setModalVisible(false);
+    clearInterval(interv);
+    setTime({ sec: 0, min: 0 });
+
     const URI = await moveRecordingToNewFolder();
     await storeRecording(URI, response);
   };
 
-  // Needs to be outside of function else it gets reset every time func is called
-  let response;
-  const handleRecordingPress = async () => {
-    if (permissions) {
-      if (saveModalVisible === true) {
-        console.log("save modal", response)
-        stopRecording(response);
-        setSaveModalVisible(false);
-      }
-      if (isRecording) {
-        console.log('Recording');
-        response = await recordingInstance.stopAndUnloadAsync();
-        console.log(response);
-        clearInterval(interv);
-        setTime({ sec: 0, min: 0 });
-
-        setRecordingInstance(null);
-        setIsRecording(false);
-        setModalVisible(false);
-
-        if (settings.optionalSaveRecording === 'false') {
-          console.log('Here 1');
-          setSaveModalVisible(true);
-        } else {
-          stopRecording(response);
-        }
-      } else createRecordingInstance();
-    }
+  const handleRecordingPress = () => {
+    if (permissions) if (isRecording) stopRecording(); else createRecordingInstance();
   };
 
   React.useEffect(() => {

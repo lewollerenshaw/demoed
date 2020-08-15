@@ -10,9 +10,15 @@ export default function globalReducer(state = initialState.settings, action) {
     case SET_AUDIO_QUALITY:
       return { ...state, quality: action.quality };
     case SET_OPTION_SAVE_RECORDING:
-      return { ...state, optionalSaveRecording: action.optionalSaveRecording };
+      if (action.optionalSaveRecording === 'true') {
+        return { ...state, optionalSaveRecording: true };
+      }
+      return { ...state, optionalSaveRecording: false };
     case SET_AUTO_SAVE_TO_DEMO:
-      return { ...state, autoSaveToDemo: action.autoSaveToDemo };
+      if (action.autoSaveToDemo === 'true') {
+        return { ...state, optionalSaveRecording: true };
+      }
+      return { ...state, autoSaveToDemo: false };
     default:
       return state;
   }
