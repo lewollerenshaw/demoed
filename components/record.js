@@ -2,7 +2,7 @@ import React from 'react';
 import * as FileSystem from 'expo-file-system';
 import { Audio } from 'expo-av';
 import {
-  View, AsyncStorage, Text, Modal, TouchableHighlight, TouchableOpacity,
+  View, AsyncStorage, Text, Modal, TouchableHighlight,
 } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
@@ -22,7 +22,6 @@ function record() {
   const [isRecording, setIsRecording] = React.useState(false);
   const [recordingInstance, setRecordingInstance] = React.useState(null);
   const [modalVisible, setModalVisible] = React.useState(false);
-  const [saveModalVisible, setSaveModalVisible] = React.useState(false);
   const [interv, setInterv] = React.useState(null);
   const [time, setTime] = React.useState({ sec: 0, min: 0 });
   const currentScreen = useSelector((state) => state.global.currentScreen);
@@ -100,7 +99,6 @@ function record() {
   };
 
   const storeRecording = async (URI, response) => {
-    console.log(settings.optionalSaveRecording);
     const recording = new Recording(
       idGenerator(),
       '',
@@ -178,34 +176,6 @@ function record() {
 
   return (
     <>
-      <Modal
-        animationType="fade"
-        transparent
-        visible={saveModalVisible}
-      >
-
-        <View style={{
-          flex: 1,
-          justifyContent: 'center',
-          alignItems: 'center',
-          marginTop: 22,
-        }}
-        >
-          <View style={{
-            justifyContent: 'center', height: 200, width: 200, backgroundColor: Colors.$lightAccent,
-          }}
-          >
-            <TouchableOpacity onPress={() => handleRecordingPress()}>
-              <Text>Save</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => setSaveModalVisible(false)}>
-              <Text>Cancel</Text>
-            </TouchableOpacity>
-          </View>
-
-        </View>
-
-      </Modal>
       <Modal
         animationType="fade"
         transparent

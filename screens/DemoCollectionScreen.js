@@ -18,7 +18,7 @@ import { Colors } from '../styles/colors';
 import { sortListByDate, formatDate, idGenerator } from '../utils/helpers';
 import DeletedDemo from '../models/deletedDemo';
 import { STORAGE_KEY, BIN_STORAGE_KEY, SETTINGS_STORAGE_KEY } from '../redux/storageKeys';
-import { setAudioQuality, setOptionSaveRecording, setAutoSaveToDemoInRedux } from '../redux/actions/settingsActions';
+import { setAudioQuality, } from '../redux/actions/settingsActions';
 
 function DemoCollectionScreen() {
   const demos = useSelector((state) => state.demos);

@@ -15,12 +15,24 @@ import * as RootNavigation from '../services/navigation/RootNavigation';
 function SettingsScreen() {
   const settings = useSelector((state) => state.settings);
   const [quality, setQuality] = React.useState(settings.quality);
-  const [optionalSaveRecording, setOptionalSaveRecording] = React.useState(settings.optionalSaveRecording);
-  const [autoSaveToDemo, setAutoSaveToDemo] = React.useState(settings.autoSaveToDemo);
+  const [optionalSaveRecording, setOptionalSaveRecording] = React.useState();
+  const [autoSaveToDemo, setAutoSaveToDemo] = React.useState();
   const dispatch = useDispatch();
 
   React.useEffect(() => {
     dispatch(isFooterVisible(false));
+    // Convert from bool to string for picker
+    if (settings.optionalSaveRecording === true) {
+      setOptionalSaveRecording('true');
+    } else {
+      setAutoSaveToDemo('false');
+    }
+
+    if (settings.autoSaveToDemo === true) {
+      setOptionalSaveRecording('true');
+    } else {
+      setAutoSaveToDemo('false');
+    }
   }, []);
 
   const changeSettingsInStorage = async () => {
