@@ -15,24 +15,27 @@ import * as RootNavigation from '../services/navigation/RootNavigation';
 function SettingsScreen() {
   const settings = useSelector((state) => state.settings);
   const [quality, setQuality] = React.useState(settings.quality);
-
   const dispatch = useDispatch();
 
   React.useEffect(() => {
     dispatch(isFooterVisible(false));
   }, []);
 
-  const handleSave = async () => {
+  const changeSettingsInStorage = async () => {
+    // Get
+    let settingsStorage = JSON.parse(await AsyncStorage.getItem(SETTINGS_STORAGE_KEY));
+    // Change
+    settingsStorage = { quality };
+    // Set
+    await AsyncStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(settingsStorage));
+  };
+
+  const handleSave = () => {
     // Set audio quality in redux so it can be fetched instantly
     dispatch(setAudioQuality(quality));
 
-    // Set audio quality in async
-    // Get
-    const settingsStorage = JSON.parse(await AsyncStorage.getItem(SETTINGS_STORAGE_KEY));
-    // Change
-    settingsStorage.quality = quality;
-    // Set
-    await AsyncStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(settingsStorage));
+    // Set in async
+    changeSettingsInStorage();
   };
 
   return (
